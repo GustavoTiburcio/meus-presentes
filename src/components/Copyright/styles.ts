@@ -5,10 +5,10 @@ export const Container = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 3rem;
+  height: 2rem;
   background-color: #1D1D1D;
   bottom: 0;
-  position: absolute;
+  position: fixed;
   z-index: 999;
   color: #fff;
 
