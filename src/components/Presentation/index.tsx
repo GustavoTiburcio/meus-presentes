@@ -1,6 +1,9 @@
-import { Container, Description, Title } from './styles';
+import { useNavigate } from 'react-router-dom';
+import { Button, Container, Description, Title } from './styles';
 
 export default function Presentation() {
+  const navigate = useNavigate();
+
   return (
     <Container>
       <Title>Bem-vindo ao MeusPresentes.com.br - O Seu Espaço de Celebração</Title>
@@ -27,6 +30,7 @@ export default function Presentation() {
         <li><b>Divulgue seu evento:</b> Iremos criar um enderço exclusivo para o seu evento. Divulgue como desejar.</li>
         <li><b>Tudo simplificado:</b> Uso gratuito e sem pegadinhas. Fique à vontade 😎</li>
       </ul>
+      <Button onClick={() => navigate('/login')}>Começar</Button>
     </Container>
   );
 };

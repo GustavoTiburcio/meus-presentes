@@ -9,6 +9,7 @@ import Copyright from '../Copyright';
 import Home from '../../pages/Home';
 import ErrorPage from '../../pages/ErrorPage';
 import Login from '../../pages/Login';
+import UserPanel from '../../pages/UserPanel';
 
 function LayoutFixo({ headerVisible }: { headerVisible?: boolean }) {
   return (
@@ -32,6 +33,7 @@ export default function RouterComponent() {
             <Routes>
               <Route element={<LayoutFixo headerVisible />}>
                 <Route path='/' element={<Home />} />
+                <Route path='/painelDeUsuario' element={<UserPanel />} />
               </Route>
               <Route path='/login' element={<Login />} />
               <Route path='*' element={<ErrorPage />} />

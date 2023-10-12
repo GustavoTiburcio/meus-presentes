@@ -21,6 +21,10 @@ export const Container = styled.div`
   h1:not(:first-of-type) {
     margin-top: 1rem;
   }
+
+  button:hover {
+    opacity: 0.9;
+  }
 `;
 
 export const Title = styled.h1`
@@ -35,4 +39,15 @@ export const Description = styled.p`
   width: 80%;
   text-align: justify;
   text-indent: 3rem;
+`;
+
+export const Button = styled.button`
+  background: #de344e;
+  color: #fff;
+  padding: 0.5rem;
+  border-style: none;
+  border-radius: 8px;
+  min-width: 8rem;
+  font-weight: bold;
+  margin: 2rem 0px;
 `;
