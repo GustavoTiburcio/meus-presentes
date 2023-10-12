@@ -172,21 +172,3 @@ export const ModalDiv = styled.div`
   height: 100%;
   width: 100%;
 `;
-
-export const CartIconDiv = styled.div`
-  position: relative;
-`;
-
-export const CartCountDiv = styled.div`
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 0.9rem;
-  font-weight: bold;
-
-  span{
-    color: white;
-  }
-`;

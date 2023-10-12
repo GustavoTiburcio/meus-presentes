@@ -105,14 +105,6 @@ export default function Header() {
             <div className='dropdown'>
               <button
                 className='dropbtn'
-                title='Indique'
-              >
-                Indique
-              </button>
-            </div>
-            <div className='dropdown'>
-              <button
-                className='dropbtn'
                 title='Contato'
               >
                 Contato
@@ -121,7 +113,16 @@ export default function Header() {
             <div className='dropdown'>
               <button
                 className='dropbtn'
+                title='Indique'
+              >
+                Indique
+              </button>
+            </div>
+            <div className='dropdown'>
+              <button
+                className='dropbtn'
                 title='Acessar conta'
+                onClick={() => navigate('/login')}
               >
                 Acessar conta
               </button>
@@ -135,7 +136,7 @@ export default function Header() {
           <a onClick={() => { }} title='Ajuda'>
             <AiIcons.AiOutlineQuestionCircle />
           </a>
-          <a onClick={() => { }} title='Login'>
+          <a onClick={() => navigate('/login')} title='Login'>
             <FiIcons.FiUser />
           </a>
         </Buttons>

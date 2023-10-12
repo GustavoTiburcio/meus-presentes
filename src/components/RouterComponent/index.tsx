@@ -3,15 +3,18 @@ import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom
 
 import Header from '../Header';
 import Loader from '../Loader';
+import Copyright from '../Copyright';
 
 //pages
 import Home from '../../pages/Home';
 import ErrorPage from '../../pages/ErrorPage';
+import Login from '../../pages/Login';
 
 function LayoutFixo({ headerVisible }: { headerVisible?: boolean }) {
   return (
     <>
       {headerVisible && <Header />}
+      <Copyright />
       <Outlet />
     </>
   );
@@ -30,6 +33,7 @@ export default function RouterComponent() {
               <Route element={<LayoutFixo headerVisible />}>
                 <Route path='/' element={<Home />} />
               </Route>
+              <Route path='/login' element={<Login />} />
               <Route path='*' element={<ErrorPage />} />
             </Routes>
           </Router> :

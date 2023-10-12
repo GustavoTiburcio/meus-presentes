@@ -1,4 +1,3 @@
-import React from 'react';
 import { Container, Image, LoaderDefault } from './styles';
 
 interface LoaderProps {
