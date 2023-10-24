@@ -1,8 +1,8 @@
 import * as aiIcons from 'react-icons/ai'; //Ant Desing Icons
-import * as faIcons from 'react-icons/fa'; //Font Awesome 5
+// import * as faIcons from 'react-icons/fa'; //Font Awesome 5
 import * as fiIcons from 'react-icons/fi'; //Feather
-import * as ioIcons from 'react-icons/io'; //Ionicons 4
-import * as io5Icons from 'react-icons/io5'; //Ionicons 5
+// import * as ioIcons from 'react-icons/io'; //Ionicons 4
+// import * as io5Icons from 'react-icons/io5'; //Ionicons 5
 
 interface IconProps {
   nome?: string;
@@ -15,10 +15,10 @@ export default function IconeDinamico({ nome, size }: IconProps) {
   const getIcon = (iconName: string) => {
     const iconsMap = new Map();
     iconsMap.set('Ai', aiIcons);
-    iconsMap.set('Fa', faIcons);
+    // iconsMap.set('Fa', faIcons);
     iconsMap.set('Fi', fiIcons);
-    iconsMap.set('Io', ioIcons);
-    iconsMap.set('Io5', io5Icons);
+    // iconsMap.set('Io', ioIcons);
+    // iconsMap.set('Io5', io5Icons);
 
     return iconsMap.get(iconName.substring(0, 2));
   };

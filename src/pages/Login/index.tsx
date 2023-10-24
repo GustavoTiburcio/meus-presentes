@@ -36,8 +36,6 @@ export default function Login() {
     'Sentiu minha falta né? 🥰',
     'Bom te ver por aqui 😜',
     'Tudo na paz? ✌',
-    'Pode dar uma espiada nas novidades, eu deixo 😜',
-    'Corre que tem promoção te esperando ✨',
     'Achou o que estava procurando? 👀',
     'É um prazer ter você conosco 💖',
     'Estava te esperando 👀',
@@ -59,7 +57,7 @@ export default function Login() {
       }
 
       toast.success(`Bem-vindo!! Fique a vontade 😉`);
-      navigate('/');
+      navigate('/painelDeUsuario');
 
     } catch (error: any) {
       if (error.response.status === 401) {
@@ -78,7 +76,7 @@ export default function Login() {
       }
 
       toast.success('Usuário cadastrado com sucesso');
-      navigate('/');
+      navigate('/painelDeUsuario');
 
     } catch (error: any) {
       toast.error('Falha ao cadastrar novo usuário. ' + error.message);

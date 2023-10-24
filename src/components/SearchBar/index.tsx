@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import * as FiIcons from 'react-icons/fi';
 import { Button, Container, Input } from './styles';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 interface SearchBarProps {
@@ -10,7 +9,6 @@ interface SearchBarProps {
 }
 
 export default function SearchBar({ placeholder, setModalVisible }: SearchBarProps) {
-  const navigate = useNavigate();
   const [pesquisa, setPesquisa] = useState<string>('');
 
   return (
@@ -22,7 +20,6 @@ export default function SearchBar({ placeholder, setModalVisible }: SearchBarPro
       }
 
       setModalVisible(false);
-      navigate(`/produtoListagem/pesquisa=${pesquisa.replaceAll('/', ' - ')}`);
     }}>
       <Input
         placeholder={placeholder}

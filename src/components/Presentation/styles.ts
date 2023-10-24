@@ -22,9 +22,6 @@ export const Container = styled.div`
     margin-top: 1rem;
   }
 
-  button:hover {
-    opacity: 0.9;
-  }
 `;
 
 export const Title = styled.h1`
