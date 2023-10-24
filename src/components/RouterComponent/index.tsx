@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 
 import Header from '../Header';
 import Loader from '../Loader';
@@ -25,6 +25,10 @@ export default function RouterComponent() {
   const logoURI = 'https://www.confirmeja.com.br/images/logo.png';
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  function PainelDeUsuarioRedirect() {
+    return <Navigate to="/painelDeUsuario/inicio" replace />;
+  }
+
   return (
     <>
       {
@@ -33,7 +37,8 @@ export default function RouterComponent() {
             <Routes>
               <Route element={<LayoutFixo headerVisible />}>
                 <Route path='/' element={<Home />} />
-                <Route path='/painelDeUsuario' element={<UserPanel />} />
+                <Route path='/painelDeUsuario' element={<PainelDeUsuarioRedirect />} />
+                <Route path='/painelDeUsuario/:itemMenuRoute' element={<UserPanel />} />
               </Route>
               <Route path='/login' element={<Login />} />
               <Route path='*' element={<ErrorPage />} />

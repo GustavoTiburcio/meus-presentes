@@ -5,6 +5,7 @@ import {
   MenuContainer, MenuInfoContainer, SubContainer,
 } from './styles';
 import { Button } from '../../components/Presentation/styles';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface IItemsMenu {
   name: string;
@@ -13,7 +14,10 @@ interface IItemsMenu {
 };
 
 export default function UserPanel() {
-  const [selectedItemMenu, setSelectedItemMenu] = useState<string>('inicio');
+  const { itemMenuRoute } = useParams();
+
+  const Navigate = useNavigate();
+  const [selectedItemMenu, setSelectedItemMenu] = useState<string>(itemMenuRoute || 'inicio');
 
   function Menu() {
     const itemsMenu: IItemsMenu[] = [
@@ -28,7 +32,10 @@ export default function UserPanel() {
       <MenuContainer>
         {itemsMenu.map((itemMenu, index) => (
           <ItemMenu
-            onClick={() => setSelectedItemMenu(itemMenu.name)}
+            onClick={() => {
+              setSelectedItemMenu(itemMenu.name);
+              Navigate(`/painelDeUsuario/${itemMenu.name}`);
+            }}
             key={index}
             isSelected={itemMenu.name === selectedItemMenu}
           >
