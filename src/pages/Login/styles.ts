@@ -156,8 +156,8 @@ export const OverlayContainer = styled.div<LoginProps>`
 
 export const Overlay = styled.div<LoginProps>`
   background: #ff416c;
-  background: -webkit-linear-gradient(to right, #1D1D1D, #555555);
-  background: linear-gradient(to right, #1D1D1D, #555555);
+  background: -webkit-linear-gradient(to right, #1D1D1D, #de344e);
+  background: linear-gradient(to right, #1D1D1D, #de344e);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: 0 0;

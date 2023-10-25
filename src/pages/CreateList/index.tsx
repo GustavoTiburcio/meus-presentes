@@ -6,16 +6,20 @@ import { useNavigate } from 'react-router-dom';
 export default function CreateList() {
   const navigate = useNavigate();
 
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+  }
+
   return (
     <Container>
       <h2>Criar Lista de Presente</h2>
       <p>Cadastre a sua lista de presentes no MeusPresentes.com.br</p>
-      <FormContainer>
+      <FormContainer onSubmit={handleSubmit}>
         <InputWrapper>
           <InputContainer>
             <label>Tipo da Lista</label>
-            <select defaultValue={'default'}>
-              <option value={'default'} disabled hidden> - Escolha - </option>
+            <select defaultValue={''} required>
+              <option value={''} disabled hidden> - Escolha - </option>
               <option>15 Anos</option>
               <option>Aniversário - Comum</option>
               <option>Aniversário - Infantil</option>
@@ -31,13 +35,13 @@ export default function CreateList() {
           </InputContainer>
           <InputContainer>
             <label>Data do Evento(Comemoração)</label>
-            <input type='date' />
+            <input type='date' required/>
           </InputContainer>
         </InputWrapper>
         <InputWrapper>
           <InputContainer>
             <label>Nome da Lista</label>
-            <input type='text' />
+            <input type='text' required/>
             <p>Informe aqui o nome dos noivos, aniversáriariantes ou tema da lista.</p>
           </InputContainer>
           <InputContainer>
@@ -49,8 +53,8 @@ export default function CreateList() {
         <InputWrapper>
           <InputContainer>
             <label>Voltagem Padrão dos Presentes</label>
-            <select defaultValue={'default'}>
-              <option value={'default'} disabled hidden> - Escolha - </option>
+            <select defaultValue={''}>
+              <option value={''} disabled hidden> - Escolha - </option>
               <option>220v</option>
               <option>110v</option>
               <option>24v</option>
@@ -59,7 +63,7 @@ export default function CreateList() {
           </InputContainer>
           <InputContainer>
             <label>Endereço Completo Para Entrega</label>
-            <textarea />
+            <textarea required/>
             <p>Informe endereço completo com CEP, complemento ou rua sem abreviar, pois os convidados podem pedir para as lojas entregarem. Caso deseje que entregue na festa, avise por aqui.</p>
           </InputContainer>
         </InputWrapper>

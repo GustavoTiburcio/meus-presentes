@@ -17,11 +17,20 @@ interface IItemsMenu {
   iconName: string;
 };
 
+interface IList {
+  id: number;
+  name: string;
+}
+
 export default function UserPanel() {
   const { itemMenuRoute } = useParams();
 
   const navigate = useNavigate();
   const [selectedItemMenu, setSelectedItemMenu] = useState<string>(itemMenuRoute || 'inicio');
+
+  const listsMock: IList[] = [
+    { id: 770756, name: 'Chá de Casa Nova Gustavo' },
+  ];
 
   function Menu() {
     const itemsMenu: IItemsMenu[] = [
@@ -70,35 +79,38 @@ export default function UserPanel() {
         <>
           <h2>Minhas listas de presentes</h2>
           <p>Veja suas listas de presente aqui.</p>
-          <ListaPresenteContainer>
-            <ListaPresenteTitle>
-              <IconeDinamico nome={'AiOutlineGift'} />
-              770756 - Chá de Casa Nova Gustavo
-            </ListaPresenteTitle>
-            <ButtonsContainer>
-              <ButtonOption>
-                <IconeDinamico nome='AiOutlineEdit' />
-                Editar Presentes
-              </ButtonOption>
-              <ButtonOption>
-                <IconeDinamico nome='AiOutlineEdit' />
-                Editar Informações
-              </ButtonOption>
-              <ButtonOption>
-                <IconeDinamico nome='AiOutlineFileExcel' />
-                Exportar p/ Excel
-              </ButtonOption>
-              <ButtonOption>
-                <IconeDinamico nome='AiOutlineShareAlt' />
-                Como Divulgar?
-              </ButtonOption>
-              <ButtonOption>
-                <IconeDinamico nome='AiOutlineDelete' />
-                Excluir Lista
-              </ButtonOption>
-            </ButtonsContainer>
-            <b>Endereço da Lista: <a href={window.location.origin + '/770756'} target='_blank'>{window.location.origin + '/770756'}</a></b>
-          </ListaPresenteContainer>
+          {listsMock.map((list, index) => (
+            <ListaPresenteContainer key={index}>
+              <ListaPresenteTitle>
+                <IconeDinamico nome={'AiOutlineGift'} />
+                {`${list.id} - ${list.name}`}
+              </ListaPresenteTitle>
+              <ButtonsContainer>
+                <ButtonOption>
+                  <IconeDinamico nome='AiOutlineEdit' />
+                  Editar Presentes
+                </ButtonOption>
+                <ButtonOption>
+                  <IconeDinamico nome='AiOutlineEdit' />
+                  Editar Informações
+                </ButtonOption>
+                <ButtonOption>
+                  <IconeDinamico nome='AiOutlineFileExcel' />
+                  Exportar Planilha
+                </ButtonOption>
+                <ButtonOption>
+                  <IconeDinamico nome='AiOutlineShareAlt' />
+                  Compartilhar
+                </ButtonOption>
+                <ButtonOption>
+                  <IconeDinamico nome='AiOutlineDelete' />
+                  Excluir Lista
+                </ButtonOption>
+              </ButtonsContainer>
+              <b>Endereço da Lista: <a href={`${window.location.origin}/${list.id}`} target='_blank'>{`${window.location.origin}/${list.id}`}</a></b>
+            </ListaPresenteContainer>
+          ))}
+          <Button onClick={() => navigate('/criarLista')}>Criar Nova Lista</Button>
         </>,
       contaDeUsuario: <>Conta de Usuário</>,
       privacidade: <>Privacidade</>,
