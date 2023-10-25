@@ -9,7 +9,7 @@ import {
   MenuContainer, MenuInfoContainer, SubContainer,
 } from './styles';
 import { Button } from '../../components/Presentation/styles';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 interface IItemsMenu {
   name: string;
@@ -20,7 +20,7 @@ interface IItemsMenu {
 export default function UserPanel() {
   const { itemMenuRoute } = useParams();
 
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
   const [selectedItemMenu, setSelectedItemMenu] = useState<string>(itemMenuRoute || 'inicio');
 
   function Menu() {
@@ -40,7 +40,7 @@ export default function UserPanel() {
           <ItemMenu
             onClick={() => {
               setSelectedItemMenu(itemMenu.name);
-              Navigate(`/painelDeUsuario/${itemMenu.name}`);
+              navigate(`/painelDeUsuario/${itemMenu.name}`);
             }}
             key={index}
             isSelected={itemMenu.name === selectedItemMenu}
@@ -61,8 +61,8 @@ export default function UserPanel() {
           <p>Confira os serviços disponíveis no menu à esquerda.</p>
           <>
             <InicioButtonsContainer>
-              <Button>Criar Lista de Presentes</Button>
-              <Button>Acessar Minhas Listas</Button>
+              <Button onClick={() => navigate('/criarLista')}>Criar Lista de Presentes</Button>
+              <Button onClick={() => setSelectedItemMenu('minhasListas')}>Acessar Minhas Listas</Button>
             </InicioButtonsContainer>
           </>
         </>,

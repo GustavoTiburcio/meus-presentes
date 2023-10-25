@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 
 import Header from '../Header';
@@ -10,6 +10,7 @@ import Home from '../../pages/Home';
 import ErrorPage from '../../pages/ErrorPage';
 import Login from '../../pages/Login';
 import UserPanel from '../../pages/UserPanel';
+import CreateList from '../../pages/CreateList';
 
 function LayoutFixo({ headerVisible }: { headerVisible?: boolean }) {
   return (
@@ -23,11 +24,17 @@ function LayoutFixo({ headerVisible }: { headerVisible?: boolean }) {
 
 export default function RouterComponent() {
   const logoURI = 'https://www.confirmeja.com.br/images/logo.png';
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   function PainelDeUsuarioRedirect() {
     return <Navigate to="/painelDeUsuario/inicio" replace />;
   }
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+  }, []);
 
   return (
     <>
@@ -37,6 +44,7 @@ export default function RouterComponent() {
             <Routes>
               <Route element={<LayoutFixo headerVisible />}>
                 <Route path='/' element={<Home />} />
+                <Route path='/criarLista' element={<CreateList />} />
                 <Route path='/painelDeUsuario' element={<PainelDeUsuarioRedirect />} />
                 <Route path='/painelDeUsuario/:itemMenuRoute' element={<UserPanel />} />
               </Route>

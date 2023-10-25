@@ -54,8 +54,8 @@ export const GlobalStyles = createGlobalStyle`
     caret-color: red;
 
     button:hover {
-    opacity: 0.9;
-  }
+      opacity: 0.9;
+    }
   }
 
   button {
