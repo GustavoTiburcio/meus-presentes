@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import IconeDinamico from '../../components/IconeDinamico';
 import {
+  ButtonOption,
+  ButtonsContainer,
   Container, InicioButtonsContainer, ItemMenu,
+  ListaPresenteContainer,
+  ListaPresenteTitle,
   MenuContainer, MenuInfoContainer, SubContainer,
 } from './styles';
 import { Button } from '../../components/Presentation/styles';
@@ -30,6 +34,8 @@ export default function UserPanel() {
 
     return (
       <MenuContainer>
+        <h2>Menu</h2>
+        <br />
         {itemsMenu.map((itemMenu, index) => (
           <ItemMenu
             onClick={() => {
@@ -39,7 +45,7 @@ export default function UserPanel() {
             key={index}
             isSelected={itemMenu.name === selectedItemMenu}
           >
-            <IconeDinamico nome={itemMenu.iconName} />
+            <IconeDinamico nome={itemMenu.iconName} size={25} />
             <span>{itemMenu.label}</span>
           </ItemMenu>
         ))}
@@ -60,7 +66,40 @@ export default function UserPanel() {
             </InicioButtonsContainer>
           </>
         </>,
-      minhasListas: <>Minhas Listas</>,
+      minhasListas:
+        <>
+          <h2>Minhas listas de presentes</h2>
+          <p>Veja suas listas de presente aqui.</p>
+          <ListaPresenteContainer>
+            <ListaPresenteTitle>
+              <IconeDinamico nome={'AiOutlineGift'} />
+              770756 - Chá de Casa Nova Gustavo
+            </ListaPresenteTitle>
+            <ButtonsContainer>
+              <ButtonOption>
+                <IconeDinamico nome='AiOutlineEdit' />
+                Editar Presentes
+              </ButtonOption>
+              <ButtonOption>
+                <IconeDinamico nome='AiOutlineEdit' />
+                Editar Informações
+              </ButtonOption>
+              <ButtonOption>
+                <IconeDinamico nome='AiOutlineFileExcel' />
+                Exportar p/ Excel
+              </ButtonOption>
+              <ButtonOption>
+                <IconeDinamico nome='AiOutlineShareAlt' />
+                Como Divulgar?
+              </ButtonOption>
+              <ButtonOption>
+                <IconeDinamico nome='AiOutlineDelete' />
+                Excluir Lista
+              </ButtonOption>
+            </ButtonsContainer>
+            <b>Endereço da Lista: <a href={window.location.origin + '/770756'} target='_blank'>{window.location.origin + '/770756'}</a></b>
+          </ListaPresenteContainer>
+        </>,
       contaDeUsuario: <>Conta de Usuário</>,
       privacidade: <>Privacidade</>,
       encerrarSessao: <>Encerrar Sessão</>,
