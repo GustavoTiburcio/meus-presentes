@@ -1,8 +1,20 @@
 import { useNavigate } from 'react-router-dom';
 import { Button, Container, Description, Title } from './styles';
+import Context, { IContext } from '../../context/Context';
+import { useContext } from 'react';
 
 export default function Presentation() {
   const navigate = useNavigate();
+  const { loginData }: IContext = useContext(Context);
+
+  function handleStartButtonClick(){
+    if (loginData.email && loginData.password) {
+      navigate('/painelDeUsuario');
+      return;
+    }
+
+    navigate('/login');
+  }
 
   return (
     <Container>
@@ -30,7 +42,7 @@ export default function Presentation() {
         <li><b>Divulgue seu evento:</b> Iremos criar um enderço exclusivo para o seu evento. Divulgue como desejar.</li>
         <li><b>Tudo simplificado:</b> Uso gratuito e sem pegadinhas. Fique à vontade 😎</li>
       </ul>
-      <Button onClick={() => navigate('/login')}>Começar</Button>
+      <Button onClick={() => handleStartButtonClick()}>Começar</Button>
     </Container>
   );
 };

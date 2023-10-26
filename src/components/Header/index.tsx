@@ -11,10 +11,11 @@ import Context, { IContext } from '../../context/Context';
 
 export default function Header() {
   const navigate = useNavigate();
-  const { logoUri }: IContext = useContext(Context);
+  const { logoUri, loginData }: IContext = useContext(Context);
   const { width } = useWindowDimensions();
-  const isMobile = width <= 767;
   const location = useLocation();
+
+  const isMobile = width <= 767;
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -50,6 +51,15 @@ export default function Header() {
         </ReactModal>
       </>
     );
+  }
+
+  function handleLoginButtonClick() {
+    if (loginData.email && loginData.password) {
+      navigate('/painelDeUsuario');
+      return;
+    }
+
+    navigate('/login');
   }
 
   return (
@@ -123,7 +133,7 @@ export default function Header() {
               <button
                 className='dropbtn'
                 title='Acessar conta'
-                onClick={() => navigate('/login')}
+                onClick={() => handleLoginButtonClick()}
               >
                 Acessar conta
               </button>
@@ -137,7 +147,7 @@ export default function Header() {
           <a onClick={() => { }} title='Ajuda'>
             <AiIcons.AiOutlineQuestionCircle />
           </a>
-          <a onClick={() => navigate('/login')} title='Login'>
+          <a onClick={() => handleLoginButtonClick()} title='Login'>
             <FiIcons.FiUser />
           </a>
         </Buttons>

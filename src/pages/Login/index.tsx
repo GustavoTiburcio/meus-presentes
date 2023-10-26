@@ -8,27 +8,18 @@ import {
 } from './styles';
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
-import Context, { IContext } from '../../context/Context';
-
-interface LoginProps {
-  username: string;
-  password: string;
-  raz?: string;
-  fan?: string;
-  cgc?: string;
-  ema: string;
-  tipusu: 'comum';
-}
+import Context, { IContext, ILoginData } from '../../context/Context';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { logoUri }: IContext = useContext(Context);
+  const { logoUri, saveLoginData }: IContext = useContext(Context);
 
   const [login, setLogin] = useState(true);
   const [redefinirPassword, setRedefinirPassword] = useState(false);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [novoUsuario, setNovoUsuario] = useState<LoginProps>({ username: '', ema: '', password: '', raz: '', fan: '', cgc: '', tipusu: 'comum' });
+  const [novoUsuario, setNovoUsuario] = useState<ILoginData>({ name: '', email: '', password: '' });
 
   const [randomCadastroFrase, setRandomCadastroFrase] = useState('');
   const [randomLoginFrase, setRandomLoginFrase] = useState('');
@@ -50,9 +41,9 @@ export default function Login() {
     'Pronto(a) para explorar novidades? 🚀',
   ];
 
-  async function getLogin({ ema, password }: LoginProps) {
+  async function getLogin({ email, password }: ILoginData) {
     try {
-      if (!ema || !password) {
+      if (!email || !password) {
         toast.warning('Credenciais inválidas. Verique os campos digitados.');
         return;
       }
@@ -69,13 +60,14 @@ export default function Login() {
     }
   }
 
-  async function postNovoCadastro(novoCadastro: LoginProps) {
+  async function postNewAccount(newAccount: ILoginData) {
     try {
-      if (!novoCadastro.ema || !novoCadastro.password || !novoCadastro.raz) {
+      if (!newAccount.email || !newAccount.password || !newAccount.name) {
         toast.warning('Dados inválidos. Verique os campos digitados.');
         return;
       }
 
+      saveLoginData(newAccount);
       toast.success('Usuário cadastrado com sucesso');
       navigate('/painelDeUsuario');
 
@@ -84,7 +76,7 @@ export default function Login() {
     }
   }
 
-  async function postRedefinirPassword(email: string) {
+  async function postPasswordReset(email: string) {
     try {
       if (!email) {
         toast.warning('Email inválido');
@@ -112,18 +104,18 @@ export default function Login() {
               <Form
                 onSubmit={(e) => {
                   e.preventDefault();
-                  postNovoCadastro(novoUsuario);
+                  postNewAccount(novoUsuario);
                 }}
               >
                 <Title>Criar Conta</Title>
                 <Input type='text' required placeholder={'Nome Completo'}
                   onChange={
-                    (e: React.ChangeEvent<HTMLInputElement>) => setNovoUsuario(prev => ({ ...prev, fan: e.target.value, raz: e.target.value }))
+                    (e: React.ChangeEvent<HTMLInputElement>) => setNovoUsuario(prev => ({ ...prev, name: e.target.value }))
                   }
                 />
                 <Input type='email' placeholder='Email' required
                   onChange={
-                    (e: React.ChangeEvent<HTMLInputElement>) => setNovoUsuario(prev => ({ ...prev, username: e.target.value, ema: e.target.value }))
+                    (e: React.ChangeEvent<HTMLInputElement>) => setNovoUsuario(prev => ({ ...prev, email: e.target.value }))
                   }
                 />
                 <Input type='password' placeholder='Senha' required
@@ -138,7 +130,7 @@ export default function Login() {
               <Form
                 onSubmit={(e) => {
                   e.preventDefault();
-                  getLogin({ ema: email, username: email, password: password, tipusu: 'comum' });
+                  getLogin({ email, password: password });
                 }}
               >
                 <Title>Vamos lá</Title>
@@ -177,7 +169,7 @@ export default function Login() {
             <Form
               onSubmit={(e) => {
                 e.preventDefault();
-                postRedefinirPassword(email);
+                postPasswordReset(email);
               }}
             >
               <Title>Recuperação de conta</Title>

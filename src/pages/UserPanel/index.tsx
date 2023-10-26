@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import IconeDinamico from '../../components/IconeDinamico';
 import {
   ButtonOption,
@@ -10,6 +10,9 @@ import {
 } from './styles';
 import { Button } from '../../components/Presentation/styles';
 import { useParams, useNavigate } from 'react-router-dom';
+import Context, { IContext } from '../../context/Context';
+
+import { toast } from 'react-toastify';
 
 interface IItemsMenu {
   name: string;
@@ -24,8 +27,9 @@ interface IList {
 
 export default function UserPanel() {
   const { itemMenuRoute } = useParams();
-
+  const { loginData, saveLoginData }: IContext = useContext(Context);
   const navigate = useNavigate();
+
   const [selectedItemMenu, setSelectedItemMenu] = useState<string>(itemMenuRoute || 'inicio');
 
   const listsMock: IList[] = [
@@ -48,6 +52,13 @@ export default function UserPanel() {
         {itemsMenu.map((itemMenu, index) => (
           <ItemMenu
             onClick={() => {
+              if (itemMenu.name === 'encerrarSessao') {
+                saveLoginData({ name: '', email: '', password: '' });
+                navigate('/login');
+                toast.success('Sessão encerrada');
+                return;
+              }
+
               setSelectedItemMenu(itemMenu.name);
               navigate(`/painelDeUsuario/${itemMenu.name}`);
             }}
@@ -66,7 +77,7 @@ export default function UserPanel() {
     const itemsMenuInfo: Record<string, JSX.Element> = {
       inicio:
         <>
-          <h2>Saudações, é aqui onde tudo começa!!</h2>
+          <h2>Bem-vindo(a) {loginData.name ?? ''}! É aqui onde tudo começa!!</h2>
           <p>Confira os serviços disponíveis no menu à esquerda.</p>
           <>
             <InicioButtonsContainer>
