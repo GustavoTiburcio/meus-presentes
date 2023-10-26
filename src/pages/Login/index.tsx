@@ -180,7 +180,7 @@ export default function Login() {
           </RedefinirPasswordContainer>
         }
       </LoginDiv>
-      {logoUri && <Logo src={logoUri} alt="Logo" onClick={() => navigate('/')} />}
+      {logoUri && <Logo src={logoUri} alt='Logo' onClick={() => navigate('/')} />}
     </Container>
   );
 }

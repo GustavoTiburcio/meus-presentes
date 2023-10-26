@@ -12,6 +12,7 @@ import Login from '../../pages/Login';
 import UserPanel from '../../pages/UserPanel';
 import CreateList from '../../pages/CreateList';
 import Context, { IContext } from '../../context/Context';
+import GiftList from '../../pages/GiftList';
 
 function LayoutFixo({ headerVisible }: { headerVisible?: boolean }) {
   return (
@@ -27,7 +28,7 @@ export default function RouterComponent() {
   const { isLoading, logoUri }: IContext = useContext(Context);
 
   function PainelDeUsuarioRedirect() {
-    return <Navigate to="/painelDeUsuario/inicio" replace />;
+    return <Navigate to='/painelDeUsuario/inicio' replace />;
   }
 
   return (
@@ -40,6 +41,7 @@ export default function RouterComponent() {
                 <Route path='/' element={<Home />} />
                 <Route path='/criarLista' element={<CreateList />} />
                 <Route path='/criarLista/:id' element={<CreateList />} />
+                <Route path='/listaDePresente/:id' element={<GiftList />} />
                 <Route path='/painelDeUsuario' element={<PainelDeUsuarioRedirect />} />
                 <Route path='/painelDeUsuario/:itemMenuRoute' element={<UserPanel />} />
               </Route>

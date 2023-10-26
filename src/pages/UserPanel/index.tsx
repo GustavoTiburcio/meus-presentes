@@ -63,7 +63,7 @@ export default function UserPanel() {
               navigate(`/painelDeUsuario/${itemMenu.name}`);
             }}
             key={index}
-            isSelected={itemMenu.name === selectedItemMenu}
+            $isSelected={itemMenu.name === selectedItemMenu}
           >
             <IconeDinamico nome={itemMenu.iconName} size={25} />
             <span>{itemMenu.label}</span>
@@ -82,7 +82,12 @@ export default function UserPanel() {
           <>
             <InicioButtonsContainer>
               <Button onClick={() => navigate('/criarLista')}>Criar Lista de Presentes</Button>
-              <Button onClick={() => setSelectedItemMenu('minhasListas')}>Acessar Minhas Listas</Button>
+              <Button
+                onClick={() => {
+                  setSelectedItemMenu('minhasListas');
+                  navigate('/painelDeUsuario/minhasListas')
+                }}
+              >Acessar Minhas Listas</Button>
             </InicioButtonsContainer>
           </>
         </>,
@@ -97,7 +102,7 @@ export default function UserPanel() {
                 {`${list.id} - ${list.name}`}
               </ListaPresenteTitle>
               <ButtonsContainer>
-                <ButtonOption>
+                <ButtonOption onClick={() => navigate(`/listaDePresente/${list.id}`, { state: { name: list.name } })}>
                   <IconeDinamico nome='AiOutlineEdit' />
                   Editar Presentes
                 </ButtonOption>

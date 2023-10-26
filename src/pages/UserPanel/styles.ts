@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 interface ItemMenuProps {
-  isSelected?: boolean;
+  $isSelected?: boolean;
 }
 
 export const Container = styled.main`
@@ -39,7 +39,7 @@ export const ItemMenu = styled.div<ItemMenuProps>`
   align-items: center;
   padding: 0.5rem;
   cursor: pointer;
-  background: ${({ isSelected }) => isSelected ? '#F2F2F2' : 'none'};
+  background: ${({ $isSelected }) => $isSelected ? '#F2F2F2' : 'none'};
 
   &:not(:first-child){
     border: 2px solid #E5E5E5;

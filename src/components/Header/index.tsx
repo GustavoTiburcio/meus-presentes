@@ -64,7 +64,7 @@ export default function Header() {
 
   return (
     <Container
-      hoverHeaderActive={isMobile}
+      $hoverHeaderActive={isMobile}
     >
       <PesquisaModal />
       <Subcontainer>
@@ -75,7 +75,7 @@ export default function Header() {
           </a>
         </LogoDiv>
         {!isMobile &&
-          <Categorias hoverHeaderActive={location.pathname === '/'}>
+          <Categorias $hoverHeaderActive={location.pathname === '/'}>
             <div className='dropdown'>
               <button
                 className='dropbtn'

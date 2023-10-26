@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 interface HeaderProps {
-  hoverHeaderActive?: boolean;
+  $hoverHeaderActive?: boolean;
 }
 
 export const Container = styled.div<HeaderProps>`
@@ -14,8 +14,8 @@ export const Container = styled.div<HeaderProps>`
     color: #fff;
   }
 
-  ${({ hoverHeaderActive }) => {
-    if (hoverHeaderActive) {
+  ${({ $hoverHeaderActive }) => {
+    if ($hoverHeaderActive) {
       return `div:hover {
         background-color: #FFF;
         * {
@@ -83,7 +83,7 @@ export const Categorias = styled.nav<HeaderProps>`
   flex-direction: row;
   text-transform: capitalize;
   font-weight: 500;
-  color: ${({ hoverHeaderActive }) => !hoverHeaderActive ? '#fff' : '#000'};
+  color: ${({ $hoverHeaderActive }) => !$hoverHeaderActive ? '#fff' : '#000'};
 
   .dropdown {
     float: left;
