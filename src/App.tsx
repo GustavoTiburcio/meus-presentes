@@ -40,7 +40,6 @@ export default function App() {
       if (loginDataStorage) {
         setLoginData(JSON.parse(loginDataStorage));
       }
-      console.log(loginDataStorage);
 
     } catch (error: any) {
       console.log(error.message);

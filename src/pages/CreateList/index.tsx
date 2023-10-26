@@ -1,9 +1,10 @@
 import React from 'react';
 import { Container, FormContainer, InputContainer, InputWrapper } from './styles';
 import { Button } from '../../components/Presentation/styles';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export default function CreateList() {
+  const routeParams = useParams();
   const navigate = useNavigate();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -12,8 +13,8 @@ export default function CreateList() {
 
   return (
     <Container>
-      <h2>Criar Lista de Presente</h2>
-      <p>Cadastre a sua lista de presentes no MeusPresentes.com.br</p>
+      <h2>{routeParams?.id ? 'Editar Informações' : 'Criar Lista de Presente'}</h2>
+      <p>{routeParams?.id ? 'Edite as informações dos campos abaixo e clique em salvar' : 'Cadastre a sua lista de presentes no MeusPresentes.com.br'}</p>
       <FormContainer onSubmit={handleSubmit}>
         <InputWrapper>
           <InputContainer>
@@ -35,13 +36,13 @@ export default function CreateList() {
           </InputContainer>
           <InputContainer>
             <label>Data do Evento(Comemoração)</label>
-            <input type='date' required/>
+            <input type='date' required />
           </InputContainer>
         </InputWrapper>
         <InputWrapper>
           <InputContainer>
             <label>Nome da Lista</label>
-            <input type='text' required/>
+            <input type='text' required />
             <p>Informe aqui o nome dos noivos, aniversáriariantes ou tema da lista.</p>
           </InputContainer>
           <InputContainer>
@@ -63,7 +64,7 @@ export default function CreateList() {
           </InputContainer>
           <InputContainer>
             <label>Endereço Completo Para Entrega</label>
-            <textarea required/>
+            <textarea required />
             <p>Informe endereço completo com CEP, complemento ou rua sem abreviar, pois os convidados podem pedir para as lojas entregarem. Caso deseje que entregue na festa, avise por aqui.</p>
           </InputContainer>
         </InputWrapper>
@@ -72,8 +73,8 @@ export default function CreateList() {
           <textarea />
           <p>Coloque algum aviso ou observação caso necessário.</p>
         </InputContainer>
-        <Button>Criar Lista</Button>
-        <a onClick={() => navigate('/painelDeUsuario')}>Voltar</a>
+        <Button>{routeParams?.id ? 'Salvar' : 'Criar Lista'}</Button>
+        <a onClick={() => navigate(-1)}>Voltar</a>
       </FormContainer>
     </Container>
   )

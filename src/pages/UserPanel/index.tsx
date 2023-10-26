@@ -101,7 +101,7 @@ export default function UserPanel() {
                   <IconeDinamico nome='AiOutlineEdit' />
                   Editar Presentes
                 </ButtonOption>
-                <ButtonOption>
+                <ButtonOption onClick={() => navigate(`/criarLista/${list.id}`)}>
                   <IconeDinamico nome='AiOutlineEdit' />
                   Editar Informações
                 </ButtonOption>

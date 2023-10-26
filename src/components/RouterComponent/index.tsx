@@ -39,6 +39,7 @@ export default function RouterComponent() {
               <Route element={<LayoutFixo headerVisible />}>
                 <Route path='/' element={<Home />} />
                 <Route path='/criarLista' element={<CreateList />} />
+                <Route path='/criarLista/:id' element={<CreateList />} />
                 <Route path='/painelDeUsuario' element={<PainelDeUsuarioRedirect />} />
                 <Route path='/painelDeUsuario/:itemMenuRoute' element={<UserPanel />} />
               </Route>
