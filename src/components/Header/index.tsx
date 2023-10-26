@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Buttons, Categorias, Container, LogoDiv, Logo, Subcontainer, ModalDiv } from './styles';
 import * as FiIcons from 'react-icons/fi';
 import * as AiIcons from 'react-icons/ai';
@@ -7,15 +7,16 @@ import ReactModal from 'react-modal';
 import SearchBar from '../SearchBar';
 import useWindowDimensions from '../../utils/WindowDimensions';
 import SideBarMobile from '../SideBarMobile';
+import Context, { IContext } from '../../context/Context';
 
 export default function Header() {
   const navigate = useNavigate();
+  const { logoUri }: IContext = useContext(Context);
   const { width } = useWindowDimensions();
   const isMobile = width <= 767;
   const location = useLocation();
 
   const [modalVisible, setModalVisible] = useState(false);
-  const logoURI = 'https://www.confirmeja.com.br/images/logo.png';
 
   function PesquisaModal() {
     return (
@@ -60,7 +61,7 @@ export default function Header() {
         {isMobile && <SideBarMobile />}
         <LogoDiv>
           <a onClick={() => navigate('/')}>
-            <Logo src={logoURI} alt='Logo' />
+            <Logo src={logoUri} alt='Logo' />
           </a>
         </LogoDiv>
         {!isMobile &&

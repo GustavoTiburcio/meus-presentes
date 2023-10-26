@@ -1,14 +1,14 @@
 import { Container, Image, LoaderDefault } from './styles';
 
 interface LoaderProps {
-  logoURI: string;
+  logoUri: string;
 }
 
-export default function Loader({ logoURI }: LoaderProps) {
+export default function Loader({ logoUri }: LoaderProps) {
   return (
     <>
       <Container>
-        {logoURI ? <Image src={logoURI} alt='Logo' /> : <LoaderDefault />}
+        {logoUri ? <Image src={logoUri} alt='Logo' /> : <LoaderDefault />}
       </Container>
     </>
   );

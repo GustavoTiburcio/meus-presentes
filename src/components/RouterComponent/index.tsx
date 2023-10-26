@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 
 import Header from '../Header';
@@ -11,6 +11,7 @@ import ErrorPage from '../../pages/ErrorPage';
 import Login from '../../pages/Login';
 import UserPanel from '../../pages/UserPanel';
 import CreateList from '../../pages/CreateList';
+import Context, { IContext } from '../../context/Context';
 
 function LayoutFixo({ headerVisible }: { headerVisible?: boolean }) {
   return (
@@ -23,18 +24,11 @@ function LayoutFixo({ headerVisible }: { headerVisible?: boolean }) {
 }
 
 export default function RouterComponent() {
-  const logoURI = 'https://www.confirmeja.com.br/images/logo.png';
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { isLoading, logoUri }: IContext = useContext(Context);
 
   function PainelDeUsuarioRedirect() {
     return <Navigate to="/painelDeUsuario/inicio" replace />;
   }
-
-  useEffect(() => {
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-  }, []);
 
   return (
     <>
@@ -52,7 +46,7 @@ export default function RouterComponent() {
               <Route path='*' element={<ErrorPage />} />
             </Routes>
           </Router> :
-          <Loader logoURI={logoURI} />
+          <Loader logoUri={logoUri} />
       }
     </>
   );

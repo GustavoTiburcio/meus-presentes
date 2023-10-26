@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
-  Anchor, Button, Container, GhostButton, Input, LeftOverlayPanel, Overlay,
-  OverlayContainer, Paragraph, RightOverlayPanel, LoginContainer,
-  CadastroContainer, Title, Form, LoginDiv, Logo, RedefinirPasswordContainer
+  Anchor, Button, Container, GhostButton,
+  Input, LeftOverlayPanel, Overlay,
+  OverlayContainer, Paragraph, RightOverlayPanel,
+  LoginContainer, CadastroContainer, Title,
+  Form, LoginDiv, Logo, RedefinirPasswordContainer
 } from './styles';
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
+import Context, { IContext } from '../../context/Context';
 
 interface LoginProps {
   username: string;
@@ -19,6 +22,7 @@ interface LoginProps {
 
 export default function Login() {
   const navigate = useNavigate();
+  const { logoUri }: IContext = useContext(Context);
 
   const [login, setLogin] = useState(true);
   const [redefinirPassword, setRedefinirPassword] = useState(false);
@@ -28,9 +32,6 @@ export default function Login() {
 
   const [randomCadastroFrase, setRandomCadastroFrase] = useState('');
   const [randomLoginFrase, setRandomLoginFrase] = useState('');
-
-  //config
-  const logoURI = 'https://www.confirmeja.com.br/images/logo.png';
 
   const frases = [
     'Sentiu minha falta né? 🥰',
@@ -187,7 +188,7 @@ export default function Login() {
           </RedefinirPasswordContainer>
         }
       </LoginDiv>
-      {logoURI && <Logo src={logoURI} alt="Logo" onClick={() => navigate('/')} />}
+      {logoUri && <Logo src={logoUri} alt="Logo" onClick={() => navigate('/')} />}
     </Container>
   );
 }
