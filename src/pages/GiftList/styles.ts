@@ -1,4 +1,6 @@
 import styled from 'styled-components';
+import { ModalDiv } from '../../components/Header/styles';
+import { InputWrapper } from '../CreateList/styles';
 
 interface ITabProps {
   $isSelected?: boolean;
@@ -55,3 +57,19 @@ export const GiftsContainer = styled.div`
   row-gap: 3rem;
   /* column-gap: 0.5rem; */
 `;
+
+export const ModalContentContainer = styled(ModalDiv)`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* justify-content: center; */
+    width: 100%;
+
+    img {
+      width: 20%;
+    }
+`
+
+export const CustomInputWrapper = styled(InputWrapper)`
+  width: 80%;
+`

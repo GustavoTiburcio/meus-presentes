@@ -71,7 +71,7 @@ export const CustomInputContainer = styled(InputContainer)`
   width: 80%;
   margin: 0rem 0px;
 
-  input{
+  input, select {
     padding: 0.3rem;
   }
 `;

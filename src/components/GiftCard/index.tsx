@@ -7,9 +7,16 @@ import { toast } from 'react-toastify';
 interface IGiftCardProps {
   gift: TGift;
   setSelectedGiftsMock: (selectedGiftsMock: any) => void;
+  setModalVisible: (modalVisible: boolean) => void;
+  setSelectedModalItem: (selectedModalItem: TGift) => void;
 }
 
-export default function GiftCard({ gift, setSelectedGiftsMock }: IGiftCardProps) {
+export default function GiftCard({
+  gift,
+  setSelectedGiftsMock,
+  setModalVisible,
+  setSelectedModalItem
+}: IGiftCardProps) {
   const [inputsValues, setInputsValues] = useState<TGift | undefined>();
 
   function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -57,7 +64,10 @@ export default function GiftCard({ gift, setSelectedGiftsMock }: IGiftCardProps)
       <ButtonsContainer>
         {gift?.requestedAmount && gift?.requestedAmount > 0 ?
           <>
-            <ActionButton>
+            <ActionButton onClick={() => {
+              setModalVisible(true);
+              setSelectedModalItem(gift);
+            }}>
               <IconeDinamico nome='AiOutlineEdit' />
               Editar
             </ActionButton>
