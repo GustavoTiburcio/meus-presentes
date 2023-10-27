@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { InputContainer } from '../CreateList/styles';
 
 interface ITabProps {
   $isSelected?: boolean;
@@ -71,13 +72,13 @@ export const Gift = styled.div<IGiftProps>`
   border: 1px solid #D3D3D3;
   border-radius: 5px;
   align-items: center;
-  box-shadow: 10px 10px 5px -9px rgba(222,52,78,0.75);
-  -webkit-box-shadow: 10px 10px 5px -9px rgba(222,52,78,0.75);
-  -moz-box-shadow: 10px 10px 5px -9px rgba(222,52,78,0.75);
+  box-shadow: 10px 10px 5px -9px rgba(0,0,0,0.75);
+  -webkit-box-shadow: 10px 10px 5px -9px rgba(0,0,0,0.75);
+  -moz-box-shadow: 10px 10px 5px -9px rgba(0,0,0,0.75);
 
   img {
     margin-top: 1rem;
-    max-height: 120px;
+    max-height: 100px;
     object-fit: contain;
     align-self: center;
   }
@@ -96,7 +97,7 @@ export const Gift = styled.div<IGiftProps>`
 `;
 
 export const ButtonsContainer = styled.div`
-  margin-top: 1rem;
+  /* margin-top: 1rem; */
   margin-bottom: 1rem;
   display: flex;
   width: 100%;
@@ -109,6 +110,7 @@ export const ActionButton = styled.span`
   justify-content: center;
   align-items: center;
   cursor:pointer;
+  margin-bottom: 1rem;
 
   svg {
     font-size: 2rem;
@@ -117,4 +119,9 @@ export const ActionButton = styled.span`
   &:hover{
     color: grey;
   }
+`;
+
+export const CustomInputContainer = styled(InputContainer)`
+    width: 80%;
+    margin: 0.3rem 0px;
 `;
