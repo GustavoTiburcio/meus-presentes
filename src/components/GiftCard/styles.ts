@@ -50,12 +50,13 @@ export const ButtonsContainer = styled.div`
   flex-wrap: wrap;
 `;
 
-export const ActionButton = styled.span`
+export const ActionButton = styled.button`
+  all: unset;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor:pointer;
-  margin-bottom: 1rem;
+  margin-top: 1rem;
 
   svg {
     font-size: 2rem;
@@ -67,6 +68,17 @@ export const ActionButton = styled.span`
 `;
 
 export const CustomInputContainer = styled(InputContainer)`
-    width: 80%;
-    margin: 0.3rem 0px;
+  width: 80%;
+  margin: 0rem 0px;
+
+  input{
+    padding: 0.3rem;
+  }
+`;
+
+export const FormContainer = styled.form`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 `;

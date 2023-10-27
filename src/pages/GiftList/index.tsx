@@ -34,6 +34,7 @@ export default function GiftList() {
   const location = useLocation();
   const [selectedTab, setSelectedTab] = useState<number>(1);
   const [selectedGiftsMock, setSelectedGiftsMock] = useState<TGift[]>([]);
+  const [, setRefresh] = useState<boolean>(true);
 
   const examplesGifts: TGift[] = [
     { id: 1, name: 'Almofada para sofá', imageUri: 'https://d2r9epyceweg5n.cloudfront.net/stores/395/200/products/cinza-601-964249b258b2ba1cbf16173035072856-1024-1024.png', },
@@ -49,7 +50,10 @@ export default function GiftList() {
       for (let index = 0; index < miss; index++) {
         selectedGiftsMock.push({ id: 9999999, name: '', imageUri: '', requestedAmount: 0, confirmedAmount: 0 });
       }
+      setRefresh(prev => !prev);
     }
+
+    // console.log(selectedGiftsMock);
 
   }, [selectedGiftsMock]);
 
@@ -73,7 +77,7 @@ export default function GiftList() {
       </TabsContainer>
       <GiftsContainer>
         {selectedTab === 1 ?
-          selectedGiftsMock.map((gift, index) => (<GiftCard gift={gift} key={index} />)) :
+          selectedGiftsMock.map((gift, index) => (<GiftCard gift={gift} key={index} setSelectedGiftsMock={setSelectedGiftsMock} />)) :
           examplesGifts.map((gift, index) => (<GiftCard gift={gift} key={index} setSelectedGiftsMock={setSelectedGiftsMock} />))
         }
       </GiftsContainer>

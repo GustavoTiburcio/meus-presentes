@@ -1,16 +1,46 @@
 import React, { useState } from 'react'
-import { ActionButton, ButtonsContainer, CustomInputContainer, Gift } from './styles'
+import { ActionButton, ButtonsContainer, CustomInputContainer, FormContainer, Gift } from './styles'
 import { TGift } from '../../pages/GiftList';
 import IconeDinamico from '../IconeDinamico';
 import { toast } from 'react-toastify';
 
 interface IGiftCardProps {
   gift: TGift;
-  setSelectedGiftsMock?: (selectedGiftsMock: any) => void;
+  setSelectedGiftsMock: (selectedGiftsMock: any) => void;
 }
 
 export default function GiftCard({ gift, setSelectedGiftsMock }: IGiftCardProps) {
   const [inputsValues, setInputsValues] = useState<TGift | undefined>();
+
+  function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    if (!inputsValues?.requestedAmount) {
+      toast.warning('Verifique a quantidade informada');
+      return;
+    }
+
+    const newItem = [{ ...inputsValues, ...gift }];
+
+
+    setSelectedGiftsMock((prev: any) => {
+      const exists = prev.filter((prev: any) => prev.id === gift.id);
+
+      if (exists.length > 0) {
+        return prev.map((prev: any) => {
+          if (prev.id === gift.id) {
+            return { ...prev, ...{ ...inputsValues, requestedAmount: +inputsValues.requestedAmount! + +prev.requestedAmount } }
+          }
+          return prev;
+        });
+      }
+
+      return [...prev.filter((selectedGift: any) => JSON.stringify(selectedGift) !== JSON.stringify({ id: 9999999, name: '', imageUri: '', requestedAmount: 0, confirmedAmount: 0 })), ...newItem];
+    });
+
+    toast.success(`${gift.name} foi adicionado a lista`);
+    setInputsValues(undefined);
+  }
 
   return (
     <Gift hidden={!gift.name && !gift.imageUri}>
@@ -31,13 +61,18 @@ export default function GiftCard({ gift, setSelectedGiftsMock }: IGiftCardProps)
               <IconeDinamico nome='AiOutlineEdit' />
               Editar
             </ActionButton>
-            <ActionButton>
+            <ActionButton onClick={() => {
+              setSelectedGiftsMock((prev: any) => prev.filter((selectedGift: any) =>
+                JSON.stringify(selectedGift) !== JSON.stringify({ id: 9999999, name: '', imageUri: '', requestedAmount: 0, confirmedAmount: 0 }) &&
+                (selectedGift.id !== gift.id)
+              ));
+            }}>
               <IconeDinamico nome='AiOutlineDelete' />
               Excluir
             </ActionButton>
           </>
           :
-          <>
+          <FormContainer onSubmit={(e: React.FormEvent<HTMLFormElement>) => handleFormSubmit(e)}>
             <CustomInputContainer>
               <label>Quantidade</label>
               <input
@@ -100,29 +135,18 @@ export default function GiftCard({ gift, setSelectedGiftsMock }: IGiftCardProps)
                 }
               />
             </CustomInputContainer>
-          </>
+            {
+              !gift?.requestedAmount &&
+              <ActionButton
+                type='submit'
+              >
+                <IconeDinamico nome='AiOutlineCheckCircle' />
+                Adicionar
+              </ActionButton>
+            }
+          </FormContainer>
         }
       </ButtonsContainer>
-      {!gift?.requestedAmount && setSelectedGiftsMock &&
-        <ActionButton onClick={() => {
-          if (!inputsValues?.requestedAmount) {
-            toast.warning('Verifique a quantidade informada');
-            return;
-          }
-
-          const newItem = [{ ...inputsValues, ...gift }];
-
-          setSelectedGiftsMock((prev: any) => [
-            ...prev.filter((selectedGift: any) => JSON.stringify(selectedGift) !== JSON.stringify({ id: 9999999, name: '', imageUri: '', requestedAmount: 0, confirmedAmount: 0 })), ...newItem
-          ]);
-
-          toast.success(`${gift.name} foi adicionado a lista`);
-          setInputsValues(undefined);
-        }}
-        >
-          <IconeDinamico nome='AiOutlineCheckCircle' />
-          Adicionar
-        </ActionButton>}
-    </Gift>
+    </Gift >
   )
 }
