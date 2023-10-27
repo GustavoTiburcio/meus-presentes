@@ -25,7 +25,7 @@ export default function GiftCard({ gift, setSelectedGiftsMock }: IGiftCardProps)
         </>
       ) : (<></>)}
       <ButtonsContainer>
-        {gift?.requestedAmount ?
+        {gift?.requestedAmount && gift?.requestedAmount > 0 ?
           <>
             <ActionButton>
               <IconeDinamico nome='AiOutlineEdit' />
@@ -49,6 +49,12 @@ export default function GiftCard({ gift, setSelectedGiftsMock }: IGiftCardProps)
                     setInputsValues((prev: any) => ({ ...prev, requestedAmount: e.target.value }));
                   }
                 }
+                onBlur={(e: React.FocusEvent<HTMLInputElement, Element>) => {
+                  if (e.target.value && +e.target.value < 1) {
+                    setInputsValues((prev: any) => ({ ...prev, requestedAmount: '' }));
+                    toast.warning('Quantidade informada inválida');
+                  }
+                }}
               />
             </CustomInputContainer>
             <CustomInputContainer>
@@ -68,7 +74,6 @@ export default function GiftCard({ gift, setSelectedGiftsMock }: IGiftCardProps)
               <CustomInputContainer>
                 <label>Voltagem</label>
                 <select
-                  defaultValue={''}
                   value={inputsValues?.voltage ?? ''}
                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                     setInputsValues((prev: any) => ({ ...prev, electrical: true, voltage: e.target.value }));
@@ -100,6 +105,11 @@ export default function GiftCard({ gift, setSelectedGiftsMock }: IGiftCardProps)
       </ButtonsContainer>
       {!gift?.requestedAmount && setSelectedGiftsMock &&
         <ActionButton onClick={() => {
+          if (!inputsValues?.requestedAmount) {
+            toast.warning('Verifique a quantidade informada');
+            return;
+          }
+
           const newItem = [{ ...inputsValues, ...gift }];
 
           setSelectedGiftsMock((prev: any) => [

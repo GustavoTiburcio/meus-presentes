@@ -37,7 +37,7 @@ export default function GiftList() {
 
   const examplesGifts: TGift[] = [
     { id: 1, name: 'Almofada para sofá', imageUri: 'https://d2r9epyceweg5n.cloudfront.net/stores/395/200/products/cinza-601-964249b258b2ba1cbf16173035072856-1024-1024.png', },
-    { id: 2, name: 'Amassador de batata', imageUri: 'https://brinox.vteximg.com.br/arquivos/ids/249487-1200-800/Amassador-de-Batatas---Top-Pratic-23-cm---Brinox.jpg?v=637001697564500000', },
+    { id: 2, name: 'Amassador de batata', imageUri: 'https://d2r9epyceweg5n.cloudfront.net/stores/822/939/products/519105-amassador-de-batatas-inox-cook-original-sl05461-4a5f5884d2353c9d4716933357609923-640-0.png', },
     { id: 3, name: 'Aparelho de jantar', imageUri: 'https://www.matissecasa.com.br/upload/produto/imagem/aparelho-de-jantar-goa-vista-alegre-18-pe-as.png', },
     { id: 4, name: 'Aspirador de pó', imageUri: 'https://content.electrolux.com.br/brasil/electrolux/a10n1-22/images/A10N1-1.png', electrical: true, voltage: '', },
   ];
