@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import ReactModal from 'react-modal';
 import { useLocation, useParams } from 'react-router-dom';
 
@@ -38,11 +38,19 @@ export default function GiftList() {
   const location = useLocation();
   const { width } = useWindowDimensions();
 
+
   const [selectedTab, setSelectedTab] = useState<number>(1);
   const [selectedGiftsMock, setSelectedGiftsMock] = useState<TGift[]>([]);
   const [, setRefresh] = useState<boolean>(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedModalItem, setSelectedModalItem] = useState<TGift>();
+
+  const modalNameInputRef = useRef<HTMLInputElement | null>(null);
+  const modalRequestedAmountInputRef = useRef<HTMLInputElement | null>(null);
+  const modalColorInputRef = useRef<HTMLInputElement | null>(null);
+  const modalVoltageInputRef = useRef<HTMLSelectElement | null>(null);
+  const modalObservationInputRef = useRef<HTMLInputElement | null>(null);
+  const modalImageInputRef = useRef<HTMLInputElement | null>(null);
 
   const isMobile = width <= 767;
 
@@ -52,6 +60,36 @@ export default function GiftList() {
     { id: 3, name: 'Aparelho de jantar', imageUri: 'https://www.matissecasa.com.br/upload/produto/imagem/aparelho-de-jantar-goa-vista-alegre-18-pe-as.png', },
     { id: 4, name: 'Aspirador de pó', imageUri: 'https://content.electrolux.com.br/brasil/electrolux/a10n1-22/images/A10N1-1.png', electrical: true, voltage: '', },
   ];
+
+  function handleSubmitEdit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    // console.log(modalNameInputRef.current?.value);
+    // console.log(modalRequestedAmountInputRef.current?.value);
+    // console.log(modalColorInputRef.current?.value);
+    // console.log(modalVoltageInputRef.current?.value);
+    // console.log(modalObservationInputRef.current?.value);
+    // console.log(modalImageInputRef.current?.value);
+
+
+    setSelectedGiftsMock(prev => prev.map((giftMock: any) => {
+      if (giftMock.id === selectedModalItem?.id) {
+        return {
+          id: giftMock.id,
+          name: modalNameInputRef.current?.value,
+          imageUri: giftMock.imageUri,
+          requestedAmount: modalRequestedAmountInputRef.current?.value,
+          color: modalColorInputRef.current?.value,
+          observation: modalObservationInputRef.current?.value,
+          ...(giftMock?.electrical && { electrical: giftMock.electrical, voltage: modalVoltageInputRef.current?.value ?? '' })
+        }
+      }
+
+      return giftMock;
+    }));
+
+    setModalVisible(false);
+  }
 
 
   function Modal() {
@@ -83,17 +121,13 @@ export default function GiftList() {
             <h2 style={{ alignSelf: 'center' }}>{selectedModalItem?.name}</h2>
             <br />
             <img src={selectedModalItem?.imageUri ?? ''} alt={selectedModalItem?.name ?? 'Item Modal'} />
-            <FormContainer>
+            <FormContainer onSubmit={(e) => handleSubmitEdit(e)}>
               <CustomInputContainer>
                 <label>Nome</label>
                 <input
                   placeholder='Nome do produto'
-                  value={selectedModalItem?.name ?? ''}
-                // onChange={
-                //   (e: React.ChangeEvent<HTMLInputElement>) => {
-                //     setInputsValues((prev: any) => ({ ...prev, requestedAmount: e.target.value }));
-                //   }
-                // }
+                  defaultValue={selectedModalItem?.name ?? ''}
+                  ref={modalNameInputRef}
                 />
               </CustomInputContainer>
               <CustomInputWrapper>
@@ -101,24 +135,16 @@ export default function GiftList() {
                   <label>Quantidade</label>
                   <input
                     placeholder='Quantidade desejada'
-                    value={selectedModalItem?.requestedAmount ?? ''}
-                  // onChange={
-                  //   (e: React.ChangeEvent<HTMLInputElement>) => {
-                  //     setInputsValues((prev: any) => ({ ...prev, requestedAmount: e.target.value }));
-                  //   }
-                  // }
+                    defaultValue={selectedModalItem?.requestedAmount ?? ''}
+                    ref={modalRequestedAmountInputRef}
                   />
                 </CustomInputContainer>
                 <CustomInputContainer>
                   <label>Cor</label>
                   <input
                     placeholder='Cor do produto'
-                    value={selectedModalItem?.color ?? ''}
-                  // onChange={
-                  //   (e: React.ChangeEvent<HTMLInputElement>) => {
-                  //     setInputsValues((prev: any) => ({ ...prev, requestedAmount: e.target.value }));
-                  //   }
-                  // }
+                    defaultValue={selectedModalItem?.color ?? ''}
+                    ref={modalColorInputRef}
                   />
                 </CustomInputContainer>
               </CustomInputWrapper>
@@ -126,10 +152,8 @@ export default function GiftList() {
                 <CustomInputContainer>
                   <label>Voltagem</label>
                   <select
-                    value={selectedModalItem?.voltage ?? ''}
-                  // onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                  //   setInputsValues((prev: any) => ({ ...prev, electrical: true, voltage: e.target.value }));
-                  // }}
+                    defaultValue={selectedModalItem?.voltage ?? ''}
+                    ref={modalVoltageInputRef}
                   >
                     <option value={''} disabled hidden> - Escolha - </option>
                     <option value={'220v'}>220v</option>
@@ -142,19 +166,16 @@ export default function GiftList() {
                 <label>Marca/Observação</label>
                 <input
                   placeholder='Marca/Observação do produto'
-                  value={selectedModalItem?.observation ?? ''}
-                // onChange={
-                //   (e: React.ChangeEvent<HTMLInputElement>) => {
-                //     setInputsValues((prev: any) => ({ ...prev, requestedAmount: e.target.value }));
-                //   }
-                // }
+                  defaultValue={selectedModalItem?.observation ?? ''}
+                  ref={modalObservationInputRef}
                 />
               </CustomInputContainer>
               <CustomInputContainer>
                 <label>Imagem</label>
                 <input
                   type='file'
-                  accept="image/png, image/jpeg"
+                  accept='image/png, image/jpeg'
+                  ref={modalImageInputRef}
                 />
               </CustomInputContainer>
               <ActionButton
@@ -210,6 +231,7 @@ export default function GiftList() {
             <GiftCard
               gift={gift}
               key={index}
+              // selectedGiftsMock={selectedGiftsMock}
               setSelectedGiftsMock={setSelectedGiftsMock}
               setModalVisible={setModalVisible}
               setSelectedModalItem={setSelectedModalItem}
