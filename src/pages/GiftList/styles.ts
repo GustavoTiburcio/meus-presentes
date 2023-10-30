@@ -73,3 +73,29 @@ export const ModalContentContainer = styled(ModalDiv)`
 export const CustomInputWrapper = styled(InputWrapper)`
   width: 80%;
 `
+export const TabContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* background-color: cyan; */
+  align-self: center;
+  flex-direction: column;
+  font-size: 1.2rem;
+  font-weight: 450;
+
+  .player {
+    height: 15rem;
+  }
+`;
+
+export const GiftsTab2Container = styled(GiftsContainer)`
+  width: 100%;
+`;
+
+export const Tab2TitleContainer = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;

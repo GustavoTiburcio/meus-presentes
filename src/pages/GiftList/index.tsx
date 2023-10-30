@@ -1,15 +1,23 @@
 import { useState, useEffect, useRef } from 'react';
 import ReactModal from 'react-modal';
 import { useLocation, useParams } from 'react-router-dom';
+import { Player } from '@lottiefiles/react-lottie-player';
+import { toast } from 'react-toastify';
+
+import giftAnimation from '../../assets/images/giftAnimation.json';
 
 import {
-  Container, CustomInputWrapper, GiftsContainer, ModalContentContainer, Tab,
+  Container, CustomInputWrapper, GiftsContainer,
+  ModalContentContainer, TabContainer, Tab,
   TabsContainer,
+  GiftsTab2Container,
+  Tab2TitleContainer
 } from './styles';
 import GiftCard from '../../components/GiftCard';
 import useWindowDimensions from '../../utils/WindowDimensions';
 import { ActionButton, CustomInputContainer, FormContainer } from '../../components/GiftCard/styles';
 import IconeDinamico from '../../components/IconeDinamico';
+import { Button } from '../../components/Presentation/styles';
 
 type IGiftBase = {
   id: number;
@@ -38,12 +46,23 @@ export default function GiftList() {
   const location = useLocation();
   const { width } = useWindowDimensions();
 
+  const isMobile = width <= 767;
 
   const [selectedTab, setSelectedTab] = useState<number>(1);
   const [selectedGiftsMock, setSelectedGiftsMock] = useState<TGift[]>([]);
+  const [examplesGifts, setExamplesGifts] = useState<TGift[]>([
+    { id: 1, name: 'Almofada para sofá', imageUri: 'https://d2r9epyceweg5n.cloudfront.net/stores/395/200/products/cinza-601-964249b258b2ba1cbf16173035072856-1024-1024.png', },
+    { id: 2, name: 'Amassador de batata', imageUri: 'https://d2r9epyceweg5n.cloudfront.net/stores/822/939/products/519105-amassador-de-batatas-inox-cook-original-sl05461-4a5f5884d2353c9d4716933357609923-640-0.png', },
+    { id: 3, name: 'Aparelho de jantar', imageUri: 'https://www.matissecasa.com.br/upload/produto/imagem/aparelho-de-jantar-goa-vista-alegre-18-pe-as.png', },
+    { id: 4, name: 'Aspirador de pó', imageUri: 'https://content.electrolux.com.br/brasil/electrolux/a10n1-22/images/A10N1-1.png', electrical: true, voltage: '', },
+    { id: 5, name: 'Aspirador de pó', imageUri: 'https://content.electrolux.com.br/brasil/electrolux/a10n1-22/images/A10N1-1.png', electrical: true, voltage: '', },
+    { id: 6, name: 'Aspirador de pó', imageUri: 'https://content.electrolux.com.br/brasil/electrolux/a10n1-22/images/A10N1-1.png', electrical: true, voltage: '', },
+    { id: 7, name: 'Aspirador de pó', imageUri: 'https://content.electrolux.com.br/brasil/electrolux/a10n1-22/images/A10N1-1.png', electrical: true, voltage: '', },
+  ]);
   const [, setRefresh] = useState<boolean>(true);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedModalItem, setSelectedModalItem] = useState<TGift>();
+  const [selectedModalItem, setSelectedModalItem] = useState<TGift | undefined>();
+  const [selectElectricalInputValue, setSelectElectricalInputValue] = useState<string>('Nao');
 
   const modalNameInputRef = useRef<HTMLInputElement | null>(null);
   const modalRequestedAmountInputRef = useRef<HTMLInputElement | null>(null);
@@ -52,43 +71,63 @@ export default function GiftList() {
   const modalObservationInputRef = useRef<HTMLInputElement | null>(null);
   const modalImageInputRef = useRef<HTMLInputElement | null>(null);
 
-  const isMobile = width <= 767;
-
-  const examplesGifts: TGift[] = [
-    { id: 1, name: 'Almofada para sofá', imageUri: 'https://d2r9epyceweg5n.cloudfront.net/stores/395/200/products/cinza-601-964249b258b2ba1cbf16173035072856-1024-1024.png', },
-    { id: 2, name: 'Amassador de batata', imageUri: 'https://d2r9epyceweg5n.cloudfront.net/stores/822/939/products/519105-amassador-de-batatas-inox-cook-original-sl05461-4a5f5884d2353c9d4716933357609923-640-0.png', },
-    { id: 3, name: 'Aparelho de jantar', imageUri: 'https://www.matissecasa.com.br/upload/produto/imagem/aparelho-de-jantar-goa-vista-alegre-18-pe-as.png', },
-    { id: 4, name: 'Aspirador de pó', imageUri: 'https://content.electrolux.com.br/brasil/electrolux/a10n1-22/images/A10N1-1.png', electrical: true, voltage: '', },
-  ];
-
-  function handleSubmitEdit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmitEdit(e: React.FormEvent<HTMLFormElement>, editando: boolean) {
     e.preventDefault();
 
-    // console.log(modalNameInputRef.current?.value);
-    // console.log(modalRequestedAmountInputRef.current?.value);
-    // console.log(modalColorInputRef.current?.value);
-    // console.log(modalVoltageInputRef.current?.value);
-    // console.log(modalObservationInputRef.current?.value);
-    // console.log(modalImageInputRef.current?.value);
+    if (!modalRequestedAmountInputRef.current?.value) {
+      toast.warning('Verifique a quantidade informada.');
+      return;
+    }
 
+    if (!modalNameInputRef.current?.value) {
+      toast.warning('Verifique o nome do presente.');
+      return;
+    }
 
-    setSelectedGiftsMock(prev => prev.map((giftMock: any) => {
-      if (giftMock.id === selectedModalItem?.id) {
-        return {
-          id: giftMock.id,
-          name: modalNameInputRef.current?.value,
-          imageUri: giftMock.imageUri,
-          requestedAmount: modalRequestedAmountInputRef.current?.value,
-          color: modalColorInputRef.current?.value,
-          observation: modalObservationInputRef.current?.value,
-          ...(giftMock?.electrical && { electrical: giftMock.electrical, voltage: modalVoltageInputRef.current?.value ?? '' })
+    if (editando) {
+      setSelectedGiftsMock(prev => prev.map((giftMock: any) => {
+        if (giftMock.id === selectedModalItem?.id) {
+          return {
+            id: giftMock.id,
+            name: modalNameInputRef.current?.value,
+            imageUri: giftMock.imageUri,
+            requestedAmount: modalRequestedAmountInputRef.current?.value,
+            color: modalColorInputRef.current?.value,
+            observation: modalObservationInputRef.current?.value,
+            ...(giftMock?.electrical && { electrical: giftMock.electrical, voltage: modalVoltageInputRef.current?.value ?? '' })
+          }
         }
-      }
 
-      return giftMock;
-    }));
+        return giftMock;
+      }));
 
+      toast.success('Presente foi atualizado ✔');
+      setModalVisible(false);
+      setSelectedModalItem(undefined);
+
+      return;
+    }
+
+    const newItem = [{
+      id: 8,
+      name: modalNameInputRef.current?.value,
+      imageUri: 'https://louisville.edu/research/handaresearchlab/pi-and-students/photos/nocamera.png/image',
+      requestedAmount: modalRequestedAmountInputRef.current?.value,
+      color: modalColorInputRef.current?.value,
+      observation: modalObservationInputRef.current?.value,
+      ...(selectElectricalInputValue === 'Sim' && { electrical: true, voltage: modalVoltageInputRef.current?.value ?? '' })
+    }];
+
+
+    setSelectedGiftsMock((prev: any) => {
+      return [...prev.filter((selectedGift: any) => JSON.stringify(selectedGift) !== JSON.stringify({ id: 9999999, name: '', imageUri: '', requestedAmount: 0, confirmedAmount: 0 })), ...newItem];
+    });
+
+    toast.success(`${modalNameInputRef.current?.value} foi adicionado a lista 😁`);
     setModalVisible(false);
+    setSelectedModalItem(undefined);
+
+    return;
   }
 
 
@@ -100,7 +139,10 @@ export default function GiftList() {
           appElement={document.getElementById('root') as HTMLElement}
           contentLabel='Minimal Modal Example'
           shouldCloseOnOverlayClick={true}
-          onRequestClose={() => setModalVisible(false)}
+          onRequestClose={() => {
+            setModalVisible(false);
+            setSelectedModalItem(undefined);
+          }}
           style={{
             overlay: {
               backgroundColor: '#1D1D1D',
@@ -118,10 +160,10 @@ export default function GiftList() {
           }}
         >
           <ModalContentContainer>
-            <h2 style={{ alignSelf: 'center' }}>{selectedModalItem?.name}</h2>
+            <h2 style={{ alignSelf: 'center' }}>{selectedModalItem?.name ?? 'Cadastro de Presente'}</h2>
             <br />
-            <img src={selectedModalItem?.imageUri ?? ''} alt={selectedModalItem?.name ?? 'Item Modal'} />
-            <FormContainer onSubmit={(e) => handleSubmitEdit(e)}>
+            {selectedModalItem?.imageUri && <img src={selectedModalItem.imageUri} alt={selectedModalItem?.name ?? 'Foto do Item Modal'} />}
+            <FormContainer onSubmit={(e) => handleSubmitEdit(e, !(!selectedModalItem?.name && !selectedModalItem?.imageUri))}>
               <CustomInputContainer>
                 <label>Nome</label>
                 <input
@@ -137,6 +179,7 @@ export default function GiftList() {
                     placeholder='Quantidade desejada'
                     defaultValue={selectedModalItem?.requestedAmount ?? ''}
                     ref={modalRequestedAmountInputRef}
+                    type='number'
                   />
                 </CustomInputContainer>
                 <CustomInputContainer>
@@ -148,7 +191,20 @@ export default function GiftList() {
                   />
                 </CustomInputContainer>
               </CustomInputWrapper>
-              {selectedModalItem?.electrical &&
+              {(!selectedModalItem?.name && !selectedModalItem?.imageUri) &&
+                <CustomInputContainer>
+                  <label>É um produto elétrico?</label>
+                  <select
+                    defaultValue={selectElectricalInputValue}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectElectricalInputValue(e.target.value)}
+                  >
+                    <option value={''} disabled hidden> - Escolha - </option>
+                    <option value={'Sim'}>Sim</option>
+                    <option value={'Nao'}>Não</option>
+                  </select>
+                </CustomInputContainer>
+              }
+              {(selectedModalItem?.electrical || (!selectedModalItem?.name && !selectedModalItem?.imageUri && selectElectricalInputValue === 'Sim')) &&
                 <CustomInputContainer>
                   <label>Voltagem</label>
                   <select
@@ -161,7 +217,8 @@ export default function GiftList() {
                     <option value={'24v'}>24v</option>
                     <option value={'12v'}>12v</option>
                   </select>
-                </CustomInputContainer>}
+                </CustomInputContainer>
+              }
               <CustomInputContainer>
                 <label>Marca/Observação</label>
                 <input
@@ -182,12 +239,11 @@ export default function GiftList() {
                 type='submit'
               >
                 <IconeDinamico nome='AiOutlineCheckCircle' />
-                Salvar
+                {!selectedModalItem?.name && !selectedModalItem?.imageUri ? 'Cadastrar' : 'Salvar'}
               </ActionButton>
             </FormContainer>
-            {/* {JSON.stringify(selectedModalItem)} */}
           </ModalContentContainer>
-        </ReactModal>
+        </ReactModal >
       </>
     );
   }
@@ -205,6 +261,20 @@ export default function GiftList() {
     // console.log(selectedGiftsMock);
 
   }, [selectedGiftsMock]);
+
+  useEffect(() => {
+    if (examplesGifts.length % 4 !== 0) {
+      const miss = 4 - (examplesGifts.length % 4);
+
+      for (let index = 0; index < miss; index++) {
+        examplesGifts.push({ id: 9999999, name: '', imageUri: '', requestedAmount: 0, confirmedAmount: 0 });
+      }
+      setRefresh(prev => !prev);
+    }
+
+    // console.log(examplesGifts);
+
+  }, [examplesGifts]);
 
   return (
     <Container>
@@ -226,25 +296,43 @@ export default function GiftList() {
         </Tab>
       </TabsContainer>
       <GiftsContainer>
-        {selectedTab === 1 ?
+        {selectedTab === 1 ? selectedGiftsMock.length > 0 ?
           selectedGiftsMock.map((gift, index) => (
             <GiftCard
               gift={gift}
               key={index}
-              // selectedGiftsMock={selectedGiftsMock}
               setSelectedGiftsMock={setSelectedGiftsMock}
               setModalVisible={setModalVisible}
               setSelectedModalItem={setSelectedModalItem}
             />
           )) :
-          examplesGifts.map((gift, index) => (
-            <GiftCard
-              gift={gift}
-              key={index}
-              setSelectedGiftsMock={setSelectedGiftsMock}
-              setModalVisible={setModalVisible}
-              setSelectedModalItem={setSelectedModalItem}
-            />))
+          (
+            <TabContainer>
+              <Player
+                src={giftAnimation}
+                className='player'
+                loop
+                autoplay
+              />
+              <p>Lista de Presentes Vazia 😢</p>
+              <Button onClick={() => setSelectedTab(2)}>Começar</Button>
+            </TabContainer>) :
+          <TabContainer>
+            <Tab2TitleContainer>
+              <h2>Exemplos de Presentes</h2>
+              <Button onClick={() => setModalVisible(true)}>Criar Novo Presente</Button>
+            </Tab2TitleContainer>
+            <GiftsTab2Container>
+              {examplesGifts.map((gift, index) => (
+                <GiftCard
+                  gift={gift}
+                  key={index}
+                  setSelectedGiftsMock={setSelectedGiftsMock}
+                  setModalVisible={setModalVisible}
+                  setSelectedModalItem={setSelectedModalItem}
+                />))}
+            </GiftsTab2Container>
+          </TabContainer>
         }
       </GiftsContainer>
     </Container>

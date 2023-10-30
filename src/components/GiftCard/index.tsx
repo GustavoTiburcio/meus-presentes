@@ -31,9 +31,9 @@ export default function GiftCard({
 
 
     setSelectedGiftsMock((prev: any) => {
-      const exists = prev.filter((prev: any) => prev.id === gift.id);
+      const alreadyExist = prev.filter((prev: any) => prev.id === gift.id);
 
-      if (exists.length > 0) {
+      if (alreadyExist.length > 0) {
         return prev.map((prev: any) => {
           if (prev.id === gift.id) {
             return { ...prev, ...{ ...inputsValues, requestedAmount: +inputsValues.requestedAmount! + +prev.requestedAmount } }
@@ -45,7 +45,7 @@ export default function GiftCard({
       return [...prev.filter((selectedGift: any) => JSON.stringify(selectedGift) !== JSON.stringify({ id: 9999999, name: '', imageUri: '', requestedAmount: 0, confirmedAmount: 0 })), ...newItem];
     });
 
-    toast.success(`${gift.name} foi adicionado a lista`);
+    toast.success(`${gift.name} foi adicionado a lista 😁`);
     setInputsValues(undefined);
   }
 
