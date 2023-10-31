@@ -24,4 +24,6 @@ router.get('/listTypes', ListTypesController.index);
 //Gift List
 router.get('/giftLists', GiftListControllers.index);
 router.get('/giftLists/:id', GiftListControllers.show);
+router.post('/giftLists', GiftListControllers.store);
+router.put('/giftLists/:id', GiftListControllers.update);
 router.delete('/giftLists/:id', GiftListControllers.delete);

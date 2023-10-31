@@ -27,7 +27,7 @@ class UserRepository {
   async create({ name, email, password }: IUser) {
     const [row] = await query(`
       INSERT INTO users(name,email,password)
-      VALUES($1,$2,$3)
+      VALUES($1, $2, $3)
       RETURNING *
     `, [name, email, password]);
     return row;

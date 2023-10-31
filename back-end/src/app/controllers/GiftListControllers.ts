@@ -25,71 +25,82 @@ class GiftListControllers {
     response.json(giftList);
   }
 
-  // async store(request: express.Request, response: express.Response) {
-  //   //Create new row;
-  //   const { name, email, password } = request.body;
+  async store(request: express.Request, response: express.Response) {
+    //Create new row;
+    const {
+      name,
+      list_type_id,
+      event_date,
+      expiration_date,
+      gifts_voltage,
+      delivery_address,
+      observation
+    } = request.body;
 
-  //   if (!name) {
-  //     return response.status(400).json({ error: 'Name is required' });
-  //   }
-  //   if (!email) {
-  //     return response.status(400).json({ error: 'Email is required' });
-  //   }
-  //   if (!isEmailValid(email)) {
-  //     return response.status(400).json({ error: 'Email invalid format' });
-  //   }
-  //   if (!password) {
-  //     return response.status(400).json({ error: 'Password is required' });
-  //   }
+    if (!name) {
+      return response.status(400).json({ error: 'Name is required' });
+    }
+    if (!list_type_id) {
+      return response.status(400).json({ error: 'list_type_id is required' });
+    }
+    if (!event_date) {
+      return response.status(400).json({ error: 'event_date is required' });
+    }
 
-  //   const userExists = await UserRepository.findByEmail(email);
+    const giftList = await GiftListRepository.create({
+      name,
+      list_type_id,
+      event_date,
+      expiration_date,
+      gifts_voltage,
+      delivery_address,
+      observation
+    });
 
-  //   if (userExists) {
-  //     return response.status(400).json({ error: 'This e-mail already in use.' });
-  //   }
+    response.status(201).json(giftList);
+  }
 
-  //   const user = await UserRepository.create({ name, email, password });
+  async update(request: express.Request, response: express.Response) {
+    // Edit row;
+    const { id } = request.params;
 
-  //   response.status(201).json(user);
-  // }
+    const {
+      name,
+      list_type_id,
+      event_date,
+      expiration_date,
+      gifts_voltage,
+      delivery_address,
+      observation
+    } = request.body;
 
-  // async update(request: express.Request, response: express.Response) {
-  //   // Edit row;
-  //   const { id } = request.params;
+    const giftListExists = await GiftListRepository.findById(id);
 
-  //   const {
-  //     name, email, password
-  //   } = request.body;
+    if (!giftListExists) {
+      return response.status(404).json({ error: 'Gift list not found.' });
+    }
+    if (!name) {
+      return response.status(400).json({ error: 'Name is required.' });
+    }
+    if (!list_type_id) {
+      return response.status(400).json({ error: 'list_type_id is required' });
+    }
+    if (!event_date) {
+      return response.status(400).json({ error: 'event_date is required' });
+    }
 
-  //   const userExists = await UserRepository.findById(id);
-  //   if (!userExists) {
-  //     return response.status(404).json({ error: 'User not found.' });
-  //   }
-  //   if (!name) {
-  //     return response.status(400).json({ error: 'Name is required.' });
-  //   }
-  //   if (!email) {
-  //     return response.status(400).json({ error: 'Email is required' });
-  //   }
-  //   if (!isEmailValid(email)) {
-  //     return response.status(400).json({ error: 'Email invalid format' });
-  //   }
-  //   if (!password) {
-  //     return response.status(400).json({ error: 'Password is required' });
-  //   }
+    const contact = await GiftListRepository.update(id, {
+      name,
+      list_type_id,
+      event_date,
+      expiration_date,
+      gifts_voltage,
+      delivery_address,
+      observation
+    });
 
-  //   const userByEmail = await UserRepository.findByEmail(email);
-
-  //   if (userByEmail && userByEmail.id !== id) {
-  //     return response.status(400).json({ error: 'This e-mail already in use.' });
-  //   }
-
-  //   const contact = await UserRepository.update(id, {
-  //     name, email, password
-  //   });
-
-  //   response.json(contact);
-  // }
+    response.json(contact);
+  }
 
   async delete(request: express.Request, response: express.Response) {
     // Delete row
