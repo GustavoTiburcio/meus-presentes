@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import UserController from '../app/controllers/UserController';
 import LoginController from '../app/controllers/LoginController';
+import ListTypesController from '../app/controllers/ListTypesController';
 
 export const router = Router();
 
@@ -15,3 +16,6 @@ router.delete('/users/:id', UserController.delete);
 
 //Login
 router.post('/login', LoginController.login);
+
+//List Types
+router.get('/listTypes', ListTypesController.index);
