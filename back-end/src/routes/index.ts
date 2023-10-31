@@ -2,6 +2,7 @@ import { Router } from 'express';
 import UserController from '../app/controllers/UserController';
 import LoginController from '../app/controllers/LoginController';
 import ListTypesController from '../app/controllers/ListTypesController';
+import GiftListControllers from '../app/controllers/GiftListControllers';
 
 export const router = Router();
 
@@ -19,3 +20,8 @@ router.post('/login', LoginController.login);
 
 //List Types
 router.get('/listTypes', ListTypesController.index);
+
+//Gift List
+router.get('/giftLists', GiftListControllers.index);
+router.get('/giftLists/:id', GiftListControllers.show);
+router.delete('/giftLists/:id', GiftListControllers.delete);

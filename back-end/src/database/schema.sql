@@ -33,7 +33,7 @@ values
   ('Noivado'),
   ('Outra Lista');
 
-CREATE TABLE IF NOT EXISTS gift_list(
+CREATE TABLE IF NOT EXISTS gift_lists(
   id UUID NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
   name VARCHAR NOT NULL,
   list_type_id UUID,
