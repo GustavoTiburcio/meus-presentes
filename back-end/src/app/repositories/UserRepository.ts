@@ -15,12 +15,12 @@ class UserRepository {
   }
 
   async findById(id: string) {
-    const [row] = await query('SELECT * FROM users WHERE id=$1', [id]);
+    const [row] = await query('SELECT * FROM users WHERE id = $1', [id]);
     return row;
   }
 
   async findByEmail(email: string) {
-    const [row] = await query('SELECT * FROM users WHERE email=$1', [email]);
+    const [row] = await query('SELECT * FROM users WHERE email = $1', [email]);
     return row;
   }
 

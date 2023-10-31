@@ -1,5 +1,6 @@
 import express from 'express';
 import UserRepository from '../repositories/UserRepository';
+import { isEmailValid } from '../../utils';
 
 class UserController {
   async index(request: express.Request, response: express.Response) {
@@ -35,6 +36,9 @@ class UserController {
     if (!email) {
       return response.status(400).json({ error: 'Email is required' });
     }
+    if (!isEmailValid(email)) {
+      return response.status(400).json({ error: 'Email invalid format' });
+    }
     if (!password) {
       return response.status(400).json({ error: 'Password is required' });
     }
@@ -67,6 +71,9 @@ class UserController {
     }
     if (!email) {
       return response.status(400).json({ error: 'Email is required' });
+    }
+    if (!isEmailValid(email)) {
+      return response.status(400).json({ error: 'Email invalid format' });
     }
     if (!password) {
       return response.status(400).json({ error: 'Password is required' });
