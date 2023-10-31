@@ -52,7 +52,7 @@ export default function GiftCard({
   return (
     <Gift hidden={!gift.name && !gift.imageUri}>
       <b>{gift.name}</b>
-      <img src={gift.imageUri} alt={gift.name} title={gift.name} />
+      <img src={gift.imageUri} alt={gift.name} title={gift.imageUri === 'https://louisville.edu/research/handaresearchlab/pi-and-students/photos/nocamera.png/image' ? 'Sem imagem' : gift.name} />
       <hr />
       {gift?.requestedAmount ? (
         <>
@@ -64,19 +64,23 @@ export default function GiftCard({
       <ButtonsContainer>
         {gift?.requestedAmount && gift?.requestedAmount > 0 ?
           <>
-            <ActionButton onClick={() => {
-              setModalVisible(true);
-              setSelectedModalItem(gift);
-            }}>
+            <ActionButton
+              onClick={() => {
+                setModalVisible(true);
+                setSelectedModalItem(gift);
+              }}
+            >
               <IconeDinamico nome='AiOutlineEdit' />
               Editar
             </ActionButton>
-            <ActionButton onClick={() => {
-              setSelectedGiftsMock((prev: any) => prev.filter((selectedGift: any) =>
-                JSON.stringify(selectedGift) !== JSON.stringify({ id: 9999999, name: '', imageUri: '', requestedAmount: 0, confirmedAmount: 0 }) &&
-                (selectedGift.id !== gift.id)
-              ));
-            }}>
+            <ActionButton
+              onClick={() => {
+                setSelectedGiftsMock((prev: any) => prev.filter((selectedGift: any) =>
+                  JSON.stringify(selectedGift) !== JSON.stringify({ id: 9999999, name: '', imageUri: '', requestedAmount: 0, confirmedAmount: 0 }) &&
+                  (selectedGift.id !== gift.id)
+                ));
+              }}
+            >
               <IconeDinamico nome='AiOutlineDelete' />
               Excluir
             </ActionButton>

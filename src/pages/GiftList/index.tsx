@@ -55,9 +55,9 @@ export default function GiftList() {
     { id: 2, name: 'Amassador de batata', imageUri: 'https://d2r9epyceweg5n.cloudfront.net/stores/822/939/products/519105-amassador-de-batatas-inox-cook-original-sl05461-4a5f5884d2353c9d4716933357609923-640-0.png', },
     { id: 3, name: 'Aparelho de jantar', imageUri: 'https://www.matissecasa.com.br/upload/produto/imagem/aparelho-de-jantar-goa-vista-alegre-18-pe-as.png', },
     { id: 4, name: 'Aspirador de pó', imageUri: 'https://content.electrolux.com.br/brasil/electrolux/a10n1-22/images/A10N1-1.png', electrical: true, voltage: '', },
-    { id: 5, name: 'Aspirador de pó', imageUri: 'https://content.electrolux.com.br/brasil/electrolux/a10n1-22/images/A10N1-1.png', electrical: true, voltage: '', },
-    { id: 6, name: 'Aspirador de pó', imageUri: 'https://content.electrolux.com.br/brasil/electrolux/a10n1-22/images/A10N1-1.png', electrical: true, voltage: '', },
-    { id: 7, name: 'Aspirador de pó', imageUri: 'https://content.electrolux.com.br/brasil/electrolux/a10n1-22/images/A10N1-1.png', electrical: true, voltage: '', },
+    // { id: 5, name: 'Aspirador de pó', imageUri: 'https://content.electrolux.com.br/brasil/electrolux/a10n1-22/images/A10N1-1.png', electrical: true, voltage: '', },
+    // { id: 6, name: 'Aspirador de pó', imageUri: 'https://content.electrolux.com.br/brasil/electrolux/a10n1-22/images/A10N1-1.png', electrical: true, voltage: '', },
+    // { id: 7, name: 'Aspirador de pó', imageUri: 'https://content.electrolux.com.br/brasil/electrolux/a10n1-22/images/A10N1-1.png', electrical: true, voltage: '', },
   ]);
   const [, setRefresh] = useState<boolean>(true);
   const [modalVisible, setModalVisible] = useState(false);

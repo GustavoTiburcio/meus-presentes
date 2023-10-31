@@ -13,6 +13,7 @@ import UserPanel from '../../pages/UserPanel';
 import CreateList from '../../pages/CreateList';
 import Context, { IContext } from '../../context/Context';
 import GiftList from '../../pages/GiftList';
+import PublicGiftList from '../../pages/PublicGiftList';
 
 function LayoutFixo({ headerVisible }: { headerVisible?: boolean }) {
   return (
@@ -39,6 +40,7 @@ export default function RouterComponent() {
             <Routes>
               <Route element={<LayoutFixo headerVisible />}>
                 <Route path='/' element={<Home />} />
+                <Route path='/:id' element={<PublicGiftList />} />
                 <Route path='/criarLista' element={<CreateList />} />
                 <Route path='/criarLista/:id' element={<CreateList />} />
                 <Route path='/listaDePresente/:id' element={<GiftList />} />
