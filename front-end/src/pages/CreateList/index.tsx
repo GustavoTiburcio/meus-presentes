@@ -48,12 +48,12 @@ export default function CreateList() {
     const formGiftList: IGiftList = {
       name: listNameInputRef.current?.value ?? '',
       list_type_id: listTypeSelectRef.current?.value ?? '',
-      event_date: eventDateInputRef.current?.value ?? '',
-      expiration_date: expirationDateInputRef.current?.value ?? '',
+      event_date: eventDateInputRef.current?.value ?? new Date().toISOString().split('T')[0],
       gifts_voltage: voltageSelectRef.current?.value ?? '',
       delivery_address: deliveryAdressTextAreaRef.current?.value ?? '',
       observation: observationTextAreaRef.current?.value ?? '',
-      user_id: loginData.id
+      user_id: loginData.id,
+      ...(expirationDateInputRef.current?.value && { event_date: expirationDateInputRef.current?.value })
     }
 
     if (!formGiftList.name) {
@@ -80,6 +80,35 @@ export default function CreateList() {
     }
 
     putGiftList(formGiftList);
+  }
+
+  async function getGiftListById() {
+    try {
+      if (!routeParams?.id) {
+        return;
+      }
+
+      handleOverlayActive(true);
+
+      const response = await api.get(`/giftLists/${routeParams?.id}`);
+
+      if (response.status === 200) {
+        setResponseData(response.data);
+        listNameInputRef.current!.value = response.data.name;
+        //select list type changed to controlled input
+        // listTypeSelectRef.current!.value = response.data.list_type_id;
+        eventDateInputRef.current!.value = response.data?.event_date ? response.data.event_date.split('T')[0] : '';
+        expirationDateInputRef.current!.value = response.data?.expiration_date ? response.data.expiration_date.split('T')[0] : '';
+        voltageSelectRef.current!.value = response.data.gifts_voltage;
+        deliveryAdressTextAreaRef.current!.value = response.data.delivery_address;
+        observationTextAreaRef.current!.value = response.data.observation;
+      }
+
+    } catch (error: any) {
+      toast.error('Falha ao obter informações da lista de presente. ' + error.message);
+    } finally {
+      handleOverlayActive(false);
+    }
   }
 
   async function postGiftList(newGiftList: IGiftList) {
@@ -126,34 +155,6 @@ export default function CreateList() {
 
     } catch (error: any) {
       toast.error('Falha ao obter tipos de lista de presente');
-    }
-  }
-
-  async function getGiftListById() {
-    try {
-      if (!routeParams?.id) {
-        return;
-      }
-
-      handleOverlayActive(true);
-
-      const response = await api.get(`/giftLists/${routeParams?.id}`);
-
-      if (response.status === 200) {
-        setResponseData(response.data);
-        listNameInputRef.current!.value = response.data.name;
-        // listTypeSelectRef.current!.value = response.data.list_type_id;
-        eventDateInputRef.current!.value = response.data.event_date.split('T')[0];
-        expirationDateInputRef.current!.value = response.data.expiration_date.split('T')[0];
-        voltageSelectRef.current!.value = response.data.gifts_voltage;
-        deliveryAdressTextAreaRef.current!.value = response.data.delivery_address;
-        observationTextAreaRef.current!.value = response.data.observation;
-      }
-
-    } catch (error: any) {
-      toast.error('Falha ao obter informações da lista de presente');
-    } finally {
-      handleOverlayActive(false);
     }
   }
 
@@ -219,6 +220,14 @@ export default function CreateList() {
                 if (new Date(e.target.value) < new Date()) {
                   expirationDateInputRef.current!.value = '';
                   toast.warning('Não é permitido informar data retroativa');
+                  return;
+                }
+                if (eventDateInputRef.current?.value) {
+                  if (new Date(e.target.value) < new Date(eventDateInputRef.current.value)) {
+                    expirationDateInputRef.current!.value = '';
+                    toast.warning('Data de expiração não pode ser inferior a data do evento');
+                    return;
+                  }
                 }
               }}
             />
