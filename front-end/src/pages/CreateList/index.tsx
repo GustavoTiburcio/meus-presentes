@@ -29,9 +29,10 @@ export interface IGiftList {
 export default function CreateList() {
   const routeParams = useParams();
   const navigate = useNavigate();
-  const { loginData }: IContext = useContext(Context);
+  const { loginData, handleOverlayActive }: IContext = useContext(Context);
 
   const [listTypes, setListTypes] = useState<IListTypes[]>([]);
+  const [responseData, setResponseData] = useState<any>();
 
   const listTypeSelectRef = useRef<HTMLSelectElement | null>(null);
   const eventDateInputRef = useRef<HTMLInputElement | null>(null);
@@ -44,36 +45,46 @@ export default function CreateList() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
+    const formGiftList: IGiftList = {
+      name: listNameInputRef.current?.value ?? '',
+      list_type_id: listTypeSelectRef.current?.value ?? '',
+      event_date: eventDateInputRef.current?.value ?? '',
+      expiration_date: expirationDateInputRef.current?.value ?? '',
+      gifts_voltage: voltageSelectRef.current?.value ?? '',
+      delivery_address: deliveryAdressTextAreaRef.current?.value ?? '',
+      observation: observationTextAreaRef.current?.value ?? '',
+      user_id: loginData.id
+    }
+
+    if (!formGiftList.name) {
+      toast.warning('Nome da lista inválido');
+      return;
+    }
+    if (!formGiftList.list_type_id) {
+      toast.warning('Tipo da lista inválido');
+      return;
+    }
+    if (!formGiftList.event_date) {
+      toast.warning('Data do evento inválida');
+      return;
+    }
+    if (!formGiftList.user_id) {
+      toast.warning('Faça login para continuar');
+      navigate('/login');
+      return;
+    }
+
+    if (!routeParams?.id) {
+      postGiftList(formGiftList);
+      return;
+    }
+
+    putGiftList(formGiftList);
+  }
+
+  async function postGiftList(newGiftList: IGiftList) {
     try {
-      const newGiftList: IGiftList = {
-        name: listNameInputRef.current?.value ?? '',
-        list_type_id: listTypeSelectRef.current?.value ?? '',
-        event_date: eventDateInputRef.current?.value ?? '',
-        expiration_date: expirationDateInputRef.current?.value ?? '',
-        gifts_voltage: voltageSelectRef.current?.value ?? '',
-        delivery_address: deliveryAdressTextAreaRef.current?.value ?? '',
-        observation: observationTextAreaRef.current?.value ?? '',
-        user_id: loginData.id
-      }
-
-      if (!newGiftList.name) {
-        toast.warning('Nome da lista inválido');
-        return;
-      }
-      if (!newGiftList.list_type_id) {
-        toast.warning('Tipo da lista inválido');
-        return;
-      }
-      if (!newGiftList.event_date) {
-        toast.warning('Data do evento inválida');
-        return;
-      }
-      if (!newGiftList.user_id) {
-        toast.warning('Faça login para continuar');
-        navigate('/login');
-        return;
-      }
-
+      handleOverlayActive(true);
       const response = await api.post('/giftLists', newGiftList);
 
       if (response.status === 201) {
@@ -83,8 +94,26 @@ export default function CreateList() {
 
     } catch (error: any) {
       toast.error('Falha ao criar lista de presentes');
+    } finally {
+      handleOverlayActive(false);
     }
+  }
 
+  async function putGiftList(editedGiftList: IGiftList) {
+    try {
+      handleOverlayActive(true);
+      const response = await api.put(`/giftLists/${routeParams?.id}`, editedGiftList);
+
+      if (response.status === 200) {
+        toast.success(`${editedGiftList.name} foi editada`);
+        navigate('/painelDeUsuario/minhasListas');
+      }
+
+    } catch (error: any) {
+      toast.error('Falha ao editar lista de presentes');
+    } finally {
+      handleOverlayActive(false);
+    }
   }
 
   async function getListTypes() {
@@ -100,7 +129,36 @@ export default function CreateList() {
     }
   }
 
+  async function getGiftListById() {
+    try {
+      if (!routeParams?.id) {
+        return;
+      }
+
+      handleOverlayActive(true);
+
+      const response = await api.get(`/giftLists/${routeParams?.id}`);
+
+      if (response.status === 200) {
+        setResponseData(response.data);
+        listNameInputRef.current!.value = response.data.name;
+        // listTypeSelectRef.current!.value = response.data.list_type_id;
+        eventDateInputRef.current!.value = response.data.event_date.split('T')[0];
+        expirationDateInputRef.current!.value = response.data.expiration_date.split('T')[0];
+        voltageSelectRef.current!.value = response.data.gifts_voltage;
+        deliveryAdressTextAreaRef.current!.value = response.data.delivery_address;
+        observationTextAreaRef.current!.value = response.data.observation;
+      }
+
+    } catch (error: any) {
+      toast.error('Falha ao obter informações da lista de presente');
+    } finally {
+      handleOverlayActive(false);
+    }
+  }
+
   useEffect(() => {
+    getGiftListById();
     getListTypes();
   }, []);
 
@@ -114,7 +172,11 @@ export default function CreateList() {
             <label>Tipo da Lista</label>
             <select
               ref={listTypeSelectRef}
-              defaultValue={''}
+              // defaultValue={''}
+              value={responseData?.list_type_id ?? ''}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                setResponseData({ list_type_id: e.target.value })
+              }}
               required
             >
               <option value={''} disabled hidden> - Escolha - </option>
@@ -129,6 +191,12 @@ export default function CreateList() {
               ref={eventDateInputRef}
               type='date'
               required
+              onBlur={(e: React.FocusEvent<HTMLInputElement, Element>) => {
+                if (new Date(e.target.value) < new Date()) {
+                  eventDateInputRef.current!.value = '';
+                  toast.warning('Não é permitido informar data retroativa');
+                }
+              }}
             />
           </InputContainer>
         </InputWrapper>
@@ -140,13 +208,19 @@ export default function CreateList() {
               type='text'
               required
             />
-            <p>Informe aqui o nome dos noivos, aniversáriariantes ou tema da lista.</p>
+            <p>Informe aqui o nome dos noivos, aniversariantes ou tema da lista.</p>
           </InputContainer>
           <InputContainer>
             <label>Data de Expiração da Lista</label>
             <input
               ref={expirationDateInputRef}
               type='date'
+              onBlur={(e: React.FocusEvent<HTMLInputElement, Element>) => {
+                if (new Date(e.target.value) < new Date()) {
+                  expirationDateInputRef.current!.value = '';
+                  toast.warning('Não é permitido informar data retroativa');
+                }
+              }}
             />
             <p>Para quem prefira que a lista fique ativa por alguns dias após o evento.</p>
           </InputContainer>

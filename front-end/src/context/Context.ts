@@ -8,6 +8,7 @@ export interface IContext {
   error: string;
   setError: (error: string) => void;
   logoUri: string;
+  handleOverlayActive: (active: boolean) => void;
 }
 
 export interface ILoginData {

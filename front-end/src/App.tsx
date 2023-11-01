@@ -3,18 +3,26 @@ import { GlobalStyles } from './styles/GlobalStyles'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Cookies from 'js-cookie';
+import LoadingOverlay from 'react-loading-overlay-ts';
 
 import RouterComponent from './components/RouterComponent';
 import ErrorPage from './pages/ErrorPage';
 
 import Context, { IContext, ILoginData } from './context/Context';
 import api from './service/api';
+import styled from 'styled-components';
+
+const StyledLoader = styled(LoadingOverlay)`
+  min-height: 100vh;
+`
 
 export default function App() {
   const [loginData, setLoginData] = useState<ILoginData>({ name: '', email: '', password: '' });
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [overlayLoadingActive, setOverlayLoadingActive] = useState(false);
   const [error, setError] = useState<string>('');
   const logoUri = 'https://www.confirmeja.com.br/images/logo.png';
+
 
   const contextValues: IContext = {
     loginData,
@@ -23,8 +31,19 @@ export default function App() {
     setIsLoading,
     error,
     setError,
-    logoUri
+    logoUri,
+    handleOverlayActive
   };
+
+  function handleOverlayActive(active: boolean) {
+    if (!active) {
+      setTimeout(() => {
+        setOverlayLoadingActive(active);
+      }, 500);
+      return
+    }
+    setOverlayLoadingActive(active);
+  }
 
   async function loginAuth(loginData: ILoginData) {
     try {
@@ -77,15 +96,20 @@ export default function App() {
   return (
     <>
       <Context.Provider value={contextValues}>
-        <GlobalStyles />
-        <ToastContainer
-          position='top-right'
-          theme='colored'
-        />
-        {!error ?
-          <RouterComponent /> :
-          <ErrorPage error={error} />
-        }
+        <StyledLoader
+          active={overlayLoadingActive}
+          spinner
+        >
+          <GlobalStyles />
+          <ToastContainer
+            position='top-right'
+            theme='colored'
+          />
+          {!error ?
+            <RouterComponent /> :
+            <ErrorPage error={error} />
+          }
+        </StyledLoader>
       </Context.Provider>
     </>
   )

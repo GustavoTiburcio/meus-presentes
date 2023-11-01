@@ -22,13 +22,13 @@ interface IItemsMenu {
 };
 
 interface IList {
-  id: number;
+  id: string;
   name: string;
 }
 
 export default function UserPanel() {
   const { itemMenuRoute } = useParams();
-  const { loginData, loginAuth }: IContext = useContext(Context);
+  const { loginData, loginAuth, handleOverlayActive }: IContext = useContext(Context);
   const navigate = useNavigate();
 
   const [selectedItemMenu, setSelectedItemMenu] = useState<string>(itemMenuRoute || 'inicio');
@@ -36,6 +36,8 @@ export default function UserPanel() {
 
   async function getGiftLists() {
     try {
+      handleOverlayActive(true);
+
       const response = await api.get('/giftLists', {
         params: {
           userId: loginData.id
@@ -48,6 +50,31 @@ export default function UserPanel() {
 
     } catch (error: any) {
       toast.error('Falha ao obter listas de presentes. ' + error.message);
+    } finally {
+      handleOverlayActive(false);
+    }
+  }
+
+  async function giftListWhatsAppShare(url: string) {
+    window.open(encodeURI(`https://api.whatsapp.com/send?text=Confira minha lista de presentes!! Acesso em: ${url}`));
+  }
+
+  async function deleteGiftList(id: string) {
+    try {
+      if (confirm('Deseja mesmo apagar?')) {
+        handleOverlayActive(true);
+
+        const response = await api.delete(`/giftLists/${id}`);
+
+        if (response.status === 204) {
+          setGiftLists(prev => prev.filter(giftList => giftList.id !== id));
+        }
+      }
+
+    } catch (error: any) {
+      toast.error('Falha ao deletar listas de presentes. ' + error.message);
+    } finally {
+      handleOverlayActive(false);
     }
   }
 
@@ -129,11 +156,11 @@ export default function UserPanel() {
                   <IconeDinamico nome='AiOutlineFileExcel' />
                   Exportar Planilha
                 </ButtonOption>
-                <ButtonOption>
+                <ButtonOption onClick={() => giftListWhatsAppShare(`${window.location.origin}/${list.id}`)}>
                   <IconeDinamico nome='AiOutlineShareAlt' />
                   Compartilhar
                 </ButtonOption>
-                <ButtonOption>
+                <ButtonOption onClick={() => deleteGiftList(list.id)}>
                   <IconeDinamico nome='AiOutlineDelete' />
                   Excluir Lista
                 </ButtonOption>
