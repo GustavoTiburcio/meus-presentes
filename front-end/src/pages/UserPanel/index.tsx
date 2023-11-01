@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import IconeDinamico from '../../components/IconeDinamico';
 import {
   ButtonOption,
@@ -13,6 +13,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Context, { IContext } from '../../context/Context';
 
 import { toast } from 'react-toastify';
+import api from '../../service/api';
 
 interface IItemsMenu {
   name: string;
@@ -31,10 +32,24 @@ export default function UserPanel() {
   const navigate = useNavigate();
 
   const [selectedItemMenu, setSelectedItemMenu] = useState<string>(itemMenuRoute || 'inicio');
+  const [giftLists, setGiftLists] = useState<IList[]>([]);
 
-  const listsMock: IList[] = [
-    { id: 770756, name: 'Chá de Casa Nova Gustavo' }
-  ];
+  async function getGiftLists() {
+    try {
+      const response = await api.get('/giftLists', {
+        params: {
+          userId: loginData.id
+        }
+      });
+
+      if (response.status === 200) {
+        setGiftLists(response.data);
+      }
+
+    } catch (error: any) {
+      toast.error('Falha ao obter listas de presentes. ' + error.message);
+    }
+  }
 
   function Menu() {
     const itemsMenu: IItemsMenu[] = [
@@ -95,11 +110,11 @@ export default function UserPanel() {
         <>
           <h2>Minhas listas de presentes</h2>
           <p>Veja suas listas de presente aqui.</p>
-          {listsMock.map((list, index) => (
+          {giftLists.map((list, index) => (
             <ListaPresenteContainer key={index}>
               <ListaPresenteTitle>
                 <IconeDinamico nome={'AiOutlineGift'} />
-                {`${list.id} - ${list.name}`}
+                {`${list.name}`}
               </ListaPresenteTitle>
               <ButtonsContainer>
                 <ButtonOption onClick={() => navigate(`/listaDePresente/${list.id}`, { state: { name: list.name } })}>
@@ -139,6 +154,10 @@ export default function UserPanel() {
       </MenuInfoContainer>
     );
   }
+
+  useEffect(() => {
+    getGiftLists();
+  }, []);
 
   return (
     <Container>

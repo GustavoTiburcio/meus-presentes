@@ -5,8 +5,9 @@ class GiftListControllers {
   async index(request: express.Request, response: express.Response) {
     // List all rows
     const orderBy = request.query?.orderBy;
+    const userId = request.query?.userId;
 
-    const giftLists = await GiftListRepository.findAll(orderBy?.toString());
+    const giftLists = await GiftListRepository.findAll(userId?.toString(), orderBy?.toString());
 
     response.json(giftLists);
   }
@@ -34,7 +35,8 @@ class GiftListControllers {
       expiration_date,
       gifts_voltage,
       delivery_address,
-      observation
+      observation,
+      user_id
     } = request.body;
 
     if (!name) {
@@ -54,7 +56,8 @@ class GiftListControllers {
       expiration_date,
       gifts_voltage,
       delivery_address,
-      observation
+      observation,
+      user_id
     });
 
     response.status(201).json(giftList);

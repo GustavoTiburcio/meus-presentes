@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -6,6 +6,7 @@ import { Container, FormContainer, InputContainer, InputWrapper } from './styles
 import { Button } from '../../components/Presentation/styles';
 
 import api from '../../service/api';
+import Context, { IContext } from '../../context/Context';
 
 export interface IListTypes {
   id: string;
@@ -21,12 +22,15 @@ export interface IGiftList {
   gifts_voltage: string;
   delivery_address: string;
   observation: string;
+  user_id?: string;
   created_at?: string;
 }
 
 export default function CreateList() {
   const routeParams = useParams();
   const navigate = useNavigate();
+  const { loginData }: IContext = useContext(Context);
+
   const [listTypes, setListTypes] = useState<IListTypes[]>([]);
 
   const listTypeSelectRef = useRef<HTMLSelectElement | null>(null);
@@ -48,7 +52,8 @@ export default function CreateList() {
         expiration_date: expirationDateInputRef.current?.value ?? '',
         gifts_voltage: voltageSelectRef.current?.value ?? '',
         delivery_address: deliveryAdressTextAreaRef.current?.value ?? '',
-        observation: observationTextAreaRef.current?.value ?? ''
+        observation: observationTextAreaRef.current?.value ?? '',
+        user_id: loginData.id
       }
 
       if (!newGiftList.name) {
@@ -63,11 +68,17 @@ export default function CreateList() {
         toast.warning('Data do evento inválida');
         return;
       }
+      if (!newGiftList.user_id) {
+        toast.warning('Faça login para continuar');
+        navigate('/login');
+        return;
+      }
 
       const response = await api.post('/giftLists', newGiftList);
 
       if (response.status === 201) {
         toast.success(`${newGiftList.name} foi cadastrada`);
+        navigate('/painelDeUsuario/minhasListas');
       }
 
     } catch (error: any) {

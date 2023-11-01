@@ -9,12 +9,18 @@ interface IGiftList {
   gifts_voltage: string;
   delivery_address: string;
   observation: string;
+  user_id?: string;
   created_at?: Date;
 }
 
 class GiftListRepository {
-  async findAll(orderBy = 'ASC') {
+  async findAll(userId = '', orderBy = 'ASC') {
     const direction = orderBy.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+
+    if (userId) {
+      const rows = await query(`SELECT * FROM gift_lists where user_id=$1 ORDER BY name ${direction}`, [userId]);
+      return rows;
+    }
 
     const rows = await query(`SELECT * FROM gift_lists ORDER BY name ${direction}`);
     return rows;
@@ -25,6 +31,11 @@ class GiftListRepository {
     return row;
   }
 
+  async findByUserId(userId = '') {
+    const [row] = await query('SELECT * FROM gift_lists WHERE user_id = $1', [userId]);
+    return row;
+  }
+
   async create({
     name,
     list_type_id,
@@ -32,13 +43,14 @@ class GiftListRepository {
     expiration_date,
     gifts_voltage,
     delivery_address,
-    observation
+    observation,
+    user_id
   }: IGiftList) {
     const [row] = await query(`
-      INSERT INTO gift_lists(name, list_type_id, event_date, expiration_date, gifts_voltage, delivery_address, observation)
-      VALUES($1, $2, $3, $4, $5, $6, $7)
+      INSERT INTO gift_lists(name, list_type_id, event_date, expiration_date, gifts_voltage, delivery_address, observation, user_id)
+      VALUES($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *
-    `, [name, list_type_id, event_date, expiration_date, gifts_voltage, delivery_address, observation]);
+    `, [name, list_type_id, event_date, expiration_date, gifts_voltage, delivery_address, observation, user_id]);
     return row;
   }
 

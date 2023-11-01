@@ -28,6 +28,12 @@ export default function App() {
 
   async function loginAuth(loginData: ILoginData) {
     try {
+      if (JSON.stringify(loginData) === JSON.stringify({ name: '', email: '', password: '' })) {
+        Cookies.remove('@loginData', { domain: window.location.hostname });
+        setLoginData({ name: '', email: '', password: '' });
+        return;
+      }
+
       const response = await api.post('/login', loginData);
 
       if (response.status === 200) {

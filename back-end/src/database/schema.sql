@@ -42,7 +42,9 @@ CREATE TABLE IF NOT EXISTS gift_lists(
   gifts_voltage VARCHAR,
   delivery_address VARCHAR,
   observation VARCHAR,
+  user_id UUID,
   created_at TIMESTAMP DEFAULT now(),
   PRIMARY KEY (id),
-  FOREIGN KEY(list_type_id) REFERENCES list_types(id)
+  FOREIGN KEY(list_type_id) REFERENCES list_types(id),
+  FOREIGN KEY(user_id) REFERENCES users(id)
 );
