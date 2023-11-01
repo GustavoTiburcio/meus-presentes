@@ -9,10 +9,11 @@ import {
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 import Context, { IContext, ILoginData } from '../../context/Context';
+import api from '../../service/api';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { logoUri, saveLoginData }: IContext = useContext(Context);
+  const { logoUri, loginAuth }: IContext = useContext(Context);
 
   const [login, setLogin] = useState(true);
   const [redefinirPassword, setRedefinirPassword] = useState(false);
@@ -42,22 +43,18 @@ export default function Login() {
   ];
 
   async function getLogin({ email, password }: ILoginData) {
-    try {
       if (!email || !password) {
         toast.warning('Credenciais inválidas. Verique os campos digitados.');
         return;
       }
 
-      toast.success(`Bem-vindo!! Fique a vontade 😉`);
-      navigate('/painelDeUsuario');
+      const response = await loginAuth({email, password});
 
-    } catch (error: any) {
-      if (error.response.status === 401) {
-        toast.error('Usuario e/ou senha inválidos.');
+      if (response) {
+        toast.success(`Bem-vindo(a)!! Fique a vontade 😉`);
+        navigate('/painelDeUsuario');
         return;
       }
-      toast.error('Falha no login. ' + error.message);
-    }
   }
 
   async function postNewAccount(newAccount: ILoginData) {
@@ -67,11 +64,28 @@ export default function Login() {
         return;
       }
 
-      saveLoginData(newAccount);
-      toast.success('Usuário cadastrado com sucesso');
-      navigate('/painelDeUsuario');
+      const response = await api.post('/users', newAccount);
 
+      if (response.status === 201) {
+        const responseAuth = await loginAuth(response.data);
+
+        if (responseAuth) {
+          toast.success('Usuário cadastrado com sucesso');
+          navigate('/painelDeUsuario');
+          return;
+        }
+      }
+
+      throw new Error('Tente novamente');
     } catch (error: any) {
+      if (error.response.data?.error === 'This e-mail already in use.') {
+        toast.error('Email já utilizado.');
+        return;
+      }
+      if (error.response.data?.error === 'Invalid format for email') {
+        toast.error('Email inválido.');
+        return;
+      }
       toast.error('Falha ao cadastrar novo usuário. ' + error.message);
     }
   }
@@ -100,7 +114,7 @@ export default function Login() {
       <LoginDiv>
         {!redefinirPassword ?
           <>
-            <CadastroContainer login={login}>
+            <CadastroContainer $login={login}>
               <Form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -126,7 +140,7 @@ export default function Login() {
                 <Button>Cadastrar</Button>
               </Form>
             </CadastroContainer>
-            <LoginContainer login={login}>
+            <LoginContainer $login={login}>
               <Form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -141,9 +155,9 @@ export default function Login() {
               </Form>
             </LoginContainer>
 
-            <OverlayContainer login={login}>
-              <Overlay login={login}>
-                <LeftOverlayPanel login={login}>
+            <OverlayContainer $login={login}>
+              <Overlay $login={login}>
+                <LeftOverlayPanel $login={login}>
                   <Title>Seja Bem-vindo!</Title>
                   <Paragraph>
                     {randomCadastroFrase}
@@ -153,7 +167,7 @@ export default function Login() {
                   </GhostButton>
                 </LeftOverlayPanel>
 
-                <RightOverlayPanel login={login}>
+                <RightOverlayPanel $login={login}>
                   <Title>Bem-vindo de Volta!</Title>
                   <Paragraph>
                     {randomLoginFrase}

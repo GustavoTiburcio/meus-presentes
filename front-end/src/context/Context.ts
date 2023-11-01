@@ -2,7 +2,7 @@ import { createContext } from 'react';
 
 export interface IContext {
   loginData: ILoginData;
-  saveLoginData: (loginData: ILoginData) => void;
+  loginAuth: (loginData: ILoginData) => Promise<boolean | undefined>;
   isLoading: boolean;
   setIsLoading: (isLoading: boolean) => void;
   error: string;
@@ -11,6 +11,7 @@ export interface IContext {
 }
 
 export interface ILoginData {
+  id?: string;
   name?: string;
   email: string;
   password: string;

@@ -1,12 +1,14 @@
+import { useEffect, useState } from 'react';
 import { GlobalStyles } from './styles/GlobalStyles'
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Cookies from 'js-cookie';
 
 import RouterComponent from './components/RouterComponent';
-
-import 'react-toastify/dist/ReactToastify.css';
-import Context, { IContext, ILoginData } from './context/Context';
-import { useEffect, useState } from 'react';
 import ErrorPage from './pages/ErrorPage';
+
+import Context, { IContext, ILoginData } from './context/Context';
+import api from './service/api';
 
 export default function App() {
   const [loginData, setLoginData] = useState<ILoginData>({ name: '', email: '', password: '' });
@@ -16,7 +18,7 @@ export default function App() {
 
   const contextValues: IContext = {
     loginData,
-    saveLoginData,
+    loginAuth,
     isLoading,
     setIsLoading,
     error,
@@ -24,18 +26,30 @@ export default function App() {
     logoUri
   };
 
-  function saveLoginData(loginData: ILoginData) {
-    setLoginData(loginData);
-    if (!loginData.name && !loginData.email && !loginData.password) {
-      localStorage.removeItem('@loginData');
-      return;
+  async function loginAuth(loginData: ILoginData) {
+    try {
+      const response = await api.post('/login', loginData);
+
+      if (response.status === 200) {
+        setLoginData(response.data);
+        Cookies.set('@loginData', JSON.stringify(response.data), { expires: 7, domain: window.location.hostname });
+        return true;
+      }
+
+      throw new Error("Não foi possível autenticar login");
+    } catch (error: any) {
+      Cookies.remove('@loginData', { domain: window.location.hostname });
+      if (error.response.status === 401) {
+        toast.error('Usuário e/ou senha inválidos.');
+        return;
+      }
+      toast.error('Falha no login. ' + error.message);
     }
-    localStorage.setItem('@loginData', JSON.stringify(loginData));
   }
 
   function getLoginData() {
     try {
-      const loginDataStorage = localStorage.getItem('@loginData');
+      const loginDataStorage = Cookies.get('@loginData');
 
       if (loginDataStorage) {
         setLoginData(JSON.parse(loginDataStorage));

@@ -8,7 +8,7 @@ export default function Presentation() {
   const { loginData }: IContext = useContext(Context);
 
   function handleStartButtonClick(){
-    if (loginData.email && loginData.password) {
+    if (loginData.name && loginData.email) {
       navigate('/painelDeUsuario');
       return;
     }

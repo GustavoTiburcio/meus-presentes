@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 interface LoginProps {
-  login: boolean;
+  $login: boolean;
 }
 
 export const Container = styled.div`
@@ -41,7 +41,7 @@ export const CadastroContainer = styled.div<LoginProps>`
   width: 50%;
   opacity: 0;
   z-index: 1;
-  ${props => props.login !== true ? `
+  ${props => props.$login !== true ? `
     transform: translateX(100%);
     opacity: 1;
     z-index: 5;
@@ -58,7 +58,7 @@ export const LoginContainer = styled.div<LoginProps>`
   left: 0;
   width: 50%;
   z-index: 2;
-  ${props => (props.login !== true ? 'transform: translateX(100%)' : null)}
+  ${props => (props.$login !== true ? 'transform: translateX(100%)' : null)}
 `;
 
 export const RedefinirPasswordContainer = styled.div`
@@ -151,7 +151,7 @@ export const OverlayContainer = styled.div<LoginProps>`
   overflow: hidden;
   transition: transform 0.6s ease-in-out;
   z-index: 100;
-  ${props => props.login !== true ? 'transform: translateX(-100%)' : null}
+  ${props => props.$login !== true ? 'transform: translateX(-100%)' : null}
 `;
 
 export const Overlay = styled.div<LoginProps>`
@@ -168,7 +168,7 @@ export const Overlay = styled.div<LoginProps>`
   width: 200%;
   transform: translateX(0);
   transition: transform 0.6s ease-in-out;
-  ${props => (props.login !== true ? 'transform: translateX(50%)' : null)}
+  ${props => (props.$login !== true ? 'transform: translateX(50%)' : null)}
 `;
 
 export const OverlayPanel = styled.div`
@@ -188,13 +188,13 @@ export const OverlayPanel = styled.div`
 
 export const LeftOverlayPanel = styled(OverlayPanel) <LoginProps>`
   transform: translateX(-20%);
-  ${props => props.login !== true ? 'transform: translateX(0);' : null}
+  ${props => props.$login !== true ? 'transform: translateX(0);' : null}
 `;
 
 export const RightOverlayPanel = styled(OverlayPanel) <LoginProps>`
   right: 0;
   transform: translateX(0);
-  ${props => props.login !== true ? 'transform: translateX(20%);' : null}
+  ${props => props.$login !== true ? 'transform: translateX(20%);' : null}
 `;
 
 export const Paragraph = styled.p`

@@ -37,7 +37,7 @@ class UserController {
       return response.status(400).json({ error: 'Email is required' });
     }
     if (!isEmailValid(email)) {
-      return response.status(400).json({ error: 'Email invalid format' });
+      return response.status(400).json({ error: 'Invalid format for email' });
     }
     if (!password) {
       return response.status(400).json({ error: 'Password is required' });

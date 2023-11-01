@@ -27,7 +27,7 @@ interface IList {
 
 export default function UserPanel() {
   const { itemMenuRoute } = useParams();
-  const { loginData, saveLoginData }: IContext = useContext(Context);
+  const { loginData, loginAuth }: IContext = useContext(Context);
   const navigate = useNavigate();
 
   const [selectedItemMenu, setSelectedItemMenu] = useState<string>(itemMenuRoute || 'inicio');
@@ -53,7 +53,7 @@ export default function UserPanel() {
           <ItemMenu
             onClick={() => {
               if (itemMenu.name === 'encerrarSessao') {
-                saveLoginData({ name: '', email: '', password: '' });
+                loginAuth({ name: '', email: '', password: '' });
                 navigate('/login');
                 toast.success('Sessão encerrada');
                 return;
