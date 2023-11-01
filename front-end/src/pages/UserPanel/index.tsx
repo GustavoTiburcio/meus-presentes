@@ -33,7 +33,7 @@ export default function UserPanel() {
   const [selectedItemMenu, setSelectedItemMenu] = useState<string>(itemMenuRoute || 'inicio');
 
   const listsMock: IList[] = [
-    { id: 770756, name: 'Chá de Casa Nova Gustavo' },
+    { id: 770756, name: 'Chá de Casa Nova Gustavo' }
   ];
 
   function Menu() {

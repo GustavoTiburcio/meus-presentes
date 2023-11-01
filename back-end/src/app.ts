@@ -5,7 +5,7 @@ require('express-async-errors');
 
 import { router } from './routes';
 
-const allowedOrigins = ['http://localhost:3000', 'http://yourapp.com'];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173'];
 
 //Create app
 export const app = express();
