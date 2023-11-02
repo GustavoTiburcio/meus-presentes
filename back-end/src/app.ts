@@ -1,11 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import logger from 'morgan';
+import dotenv from 'dotenv';
 require('express-async-errors');
 
 import { router } from './routes';
 
 const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173'];
+dotenv.config();
 
 //Create app
 export const app = express();

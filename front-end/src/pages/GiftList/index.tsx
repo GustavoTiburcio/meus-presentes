@@ -279,7 +279,7 @@ export default function GiftList() {
   return (
     <Container>
       <Modal />
-      <h2>{routeParams?.id ?? ''} - {location.state?.name ?? ''}</h2>
+      <h2>{location.state?.name ?? ''}</h2>
       <p>Adicione, Crie ou Remova presentes da sua lista!</p>
       <br />
       <TabsContainer>
