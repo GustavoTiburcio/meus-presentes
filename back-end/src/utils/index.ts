@@ -11,6 +11,11 @@ export function isEmailValid(email: string): boolean {
   return emailRegex.test(email);
 }
 
+export function isValidUUIDv4(uuid: string) {
+  const uuidv4Pattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/;
+  return uuidv4Pattern.test(uuid);
+}
+
 export function sendEmail(emailMessage: IEmailMessage) {
   const transporter = nodemailer.createTransport({
     service: 'gmail',                              // the service used

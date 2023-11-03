@@ -23,8 +23,13 @@ type TGiftModelNonElectrical = TGiftModelBase & {
 type TGiftModel = TGiftModelElectrical | TGiftModelNonElectrical;
 
 class GiftModelsRepository {
-  async findAll(orderBy = 'ASC') {
+  async findAll(listTypeId = '', orderBy = 'ASC') {
     const direction = orderBy.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+
+    if (listTypeId) {
+      const rows = await query(`SELECT * FROM gift_models WHERE list_type_id=$1 ORDER BY name ${direction}`, [listTypeId]);
+      return rows;
+    }
 
     const rows = await query(`SELECT * FROM gift_models ORDER BY name ${direction}`);
     return rows;

@@ -1,12 +1,18 @@
 import express from 'express';
 import GiftModelsRepository from '../repositories/GiftModelsRepository';
+import {isValidUUIDv4} from '../../utils';
 
 class GiftModelsController {
   async index(request: express.Request, response: express.Response) {
     // List all rows
     const orderBy = request.query?.orderBy;
+    const listTypeId = request.query?.listTypeId;
 
-    const giftModels = await GiftModelsRepository.findAll(orderBy?.toString());
+    if (listTypeId && !isValidUUIDv4(listTypeId.toString())) {
+      return response.status(400).json({ error: 'Invalid UUID string' });
+    }
+
+    const giftModels = await GiftModelsRepository.findAll(listTypeId?.toString(), orderBy?.toString());
 
     response.json(giftModels);
   }
@@ -14,6 +20,10 @@ class GiftModelsController {
   async show(request: express.Request, response: express.Response) {
     //List specific row by id
     const { id } = request.params;
+
+    if (!isValidUUIDv4(id)) {
+      return response.status(400).json({ error: 'Invalid UUID string' });
+    }
 
     const giftModel = await GiftModelsRepository.findById(id);
 

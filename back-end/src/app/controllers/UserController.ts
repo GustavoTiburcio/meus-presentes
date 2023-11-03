@@ -1,6 +1,6 @@
 import express from 'express';
 import UserRepository from '../repositories/UserRepository';
-import { isEmailValid, sendEmail } from '../../utils';
+import { isEmailValid, isValidUUIDv4, sendEmail } from '../../utils';
 
 class UserController {
   async index(request: express.Request, response: express.Response) {
@@ -15,6 +15,10 @@ class UserController {
   async show(request: express.Request, response: express.Response) {
     //List specific row by id
     const { id } = request.params;
+
+    if (!isValidUUIDv4(id)) {
+      return response.status(400).json({ error: 'Invalid UUID string' });
+    }
 
     const user = await UserRepository.findById(id);
 
