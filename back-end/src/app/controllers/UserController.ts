@@ -54,16 +54,16 @@ class UserController {
     if (user) {
       sendEmail({
         receiver: user.email,
-        subject: '🎉 Bem-vindo ao MeusPresentes.com.br - O lugar onde a diversão começa!',
+        subject: 'Bem-vindo ao MeusPresentes.com.br - O lugar onde a diversão começa! 🎉',
         body: `
           <!DOCTYPE html>
           <html>
           <head>
               <meta charset="UTF-8">
-              <title>Bem-vindo ao MeusPresentes.com.br</title>
+              <title>Bem-vindo ao MeusPresentes.com.br 🎉</title>
           </head>
           <body>
-              <h1>🎉 Bem-vindo ao MeusPresentes.com.br - O lugar onde a diversão começa!</h1>
+              <h1>Bem-vindo ao MeusPresentes.com.br - O lugar onde a diversão começa! 🎉</h1>
               <p>
                   Oi ${user.name}! 🌟<br><br>
                   Prepare-se para entrar na maravilhosa jornada de criar listas de presentes inesquecíveis com o MeusPresentes.com.br! Estamos super empolgados por você estar aqui, e não podemos esperar para ver como você vai tornar seus eventos ainda mais incríveis.

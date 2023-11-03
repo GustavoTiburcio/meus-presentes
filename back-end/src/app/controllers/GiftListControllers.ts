@@ -1,5 +1,7 @@
 import express from 'express';
 import GiftListRepository from '../repositories/GiftListRepository';
+import UserRepository from '../repositories/UserRepository';
+import { sendEmail } from '../../utils';
 
 class GiftListControllers {
   async index(request: express.Request, response: express.Response) {
@@ -59,6 +61,38 @@ class GiftListControllers {
       observation,
       user_id
     });
+
+
+    if (giftList) {
+      const user = await UserRepository.findById(giftList.user_id);
+
+      if (user) {
+
+        sendEmail({
+          receiver: user.email,
+          subject: 'MeusPresentes.com.br - Sua lista já está disponível!! 🎉',
+          body: `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Sua Lista de Presentes ${giftList.name} já está disponível</title>
+            </head>
+            <body>
+                <h1>Sua Lista de Presentes ${giftList.name} já está disponível 🎉</h1>
+                <p>
+                    Oi ${user.name}! 🌟<br><br>
+                    Sua lista de presentes foi criada e já está acessível em www.meuspresentes.com.br/${giftList.id}
+                </p>
+                <p>Copie e envie o link acima para os seus convidados.</p>
+                <p>Um grande abraço,</p>
+                <p>Gustavo Tiburcio 😎<br>Desenvolvedor 🚀<br>MeusPresentes.com.br 🎊</p>
+            </body>
+            </html>
+        `
+        });
+      }
+    }
 
     response.status(201).json(giftList);
   }

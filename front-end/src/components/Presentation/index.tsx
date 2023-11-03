@@ -9,7 +9,7 @@ export default function Presentation() {
 
   function handleStartButtonClick(){
     if (loginData.name && loginData.email) {
-      navigate('/painelDeUsuario');
+      navigate('/painelDeUsuario/inicio');
       return;
     }
 

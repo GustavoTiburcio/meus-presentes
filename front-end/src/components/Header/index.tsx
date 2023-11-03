@@ -54,8 +54,8 @@ export default function Header() {
   }
 
   function handleLoginButtonClick() {
-    if (loginData.email && loginData.password) {
-      navigate('/painelDeUsuario');
+    if (loginData.name && loginData.email) {
+      navigate('/painelDeUsuario/inicio');
       return;
     }
 
