@@ -42,7 +42,7 @@ export default function GiftCard({
         });
       }
 
-      return [...prev.filter((selectedGift: any) => JSON.stringify(selectedGift) !== JSON.stringify({ id: 9999999, name: '', imageUri: '', requestedAmount: 0, confirmedAmount: 0 })), ...newItem];
+      return [...prev.filter((selectedGift: any) => JSON.stringify(selectedGift) !== JSON.stringify({ id: 9999999, name: '', image_uri: '', requestedAmount: 0, confirmedAmount: 0 })), ...newItem];
     });
 
     toast.success(`${gift.name} foi adicionado a lista 😁`);
@@ -50,9 +50,9 @@ export default function GiftCard({
   }
 
   return (
-    <Gift hidden={!gift.name && !gift.imageUri}>
+    <Gift hidden={!gift.name && !gift.image_uri}>
       <b>{gift.name}</b>
-      <img src={gift.imageUri} alt={gift.name} title={gift.imageUri === 'https://louisville.edu/research/handaresearchlab/pi-and-students/photos/nocamera.png/image' ? 'Sem imagem' : gift.name} />
+      <img src={gift.image_uri} alt={gift.name} title={gift.image_uri === 'https://louisville.edu/research/handaresearchlab/pi-and-students/photos/nocamera.png/image' ? 'Sem imagem' : gift.name} />
       <hr />
       {gift?.requestedAmount ? (
         <>
@@ -76,7 +76,7 @@ export default function GiftCard({
             <ActionButton
               onClick={() => {
                 setSelectedGiftsMock((prev: any) => prev.filter((selectedGift: any) =>
-                  JSON.stringify(selectedGift) !== JSON.stringify({ id: 9999999, name: '', imageUri: '', requestedAmount: 0, confirmedAmount: 0 }) &&
+                  JSON.stringify(selectedGift) !== JSON.stringify({ id: 9999999, name: '', image_uri: '', requestedAmount: 0, confirmedAmount: 0 }) &&
                   (selectedGift.id !== gift.id)
                 ));
               }}

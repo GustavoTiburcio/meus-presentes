@@ -21,9 +21,17 @@ interface IItemsMenu {
   iconName: string;
 };
 
-interface IList {
+export interface IGiftList {
   id: string;
   name: string;
+  list_type_id: string;
+  event_date: string;
+  expiration_date?: string | null;
+  gifts_voltage?: string;
+  delivery_address?: string;
+  observation?: string;
+  user_id: string;
+  created_at?: string;
 }
 
 export default function UserPanel() {
@@ -32,7 +40,7 @@ export default function UserPanel() {
   const navigate = useNavigate();
 
   const [selectedItemMenu, setSelectedItemMenu] = useState<string>(itemMenuRoute || 'inicio');
-  const [giftLists, setGiftLists] = useState<IList[]>([]);
+  const [giftLists, setGiftLists] = useState<IGiftList[]>([]);
 
   async function getGiftLists() {
     try {
@@ -144,7 +152,7 @@ export default function UserPanel() {
                 {`${list.name}`}
               </ListaPresenteTitle>
               <ButtonsContainer>
-                <ButtonOption onClick={() => navigate(`/listaDePresente/${list.id}`, { state: { name: list.name } })}>
+                <ButtonOption onClick={() => navigate(`/listaDePresente/${list.id}`)}>
                   <IconeDinamico nome='AiOutlineEdit' />
                   Editar Presentes
                 </ButtonOption>

@@ -52,7 +52,7 @@ class GiftModelsController {
       return response.status(400).json({ error: 'list_type_id is required' });
     }
     if (electrical && !voltage) {
-      return response.status(400).json({ error: 'voltage is required when electrical is true' });
+      return response.status(400).json({ error: 'property voltage is required when electrical is true' });
     }
 
     const giftModel = await GiftModelsRepository.create({
@@ -90,7 +90,7 @@ class GiftModelsController {
       return response.status(400).json({ error: 'list_type_id is required' });
     }
     if (electrical && !voltage) {
-      return response.status(400).json({ error: 'voltage is required when electrical is true' });
+      return response.status(400).json({ error: 'property voltage is required when electrical is true' });
     }
 
     const giftModel = await GiftModelsRepository.update(id, {

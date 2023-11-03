@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import ReactModal from 'react-modal';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Player } from '@lottiefiles/react-lottie-player';
 import { toast } from 'react-toastify';
 
@@ -18,11 +18,14 @@ import useWindowDimensions from '../../utils/WindowDimensions';
 import { ActionButton, CustomInputContainer, FormContainer } from '../../components/GiftCard/styles';
 import IconeDinamico from '../../components/IconeDinamico';
 import { Button } from '../../components/Presentation/styles';
+import api from '../../service/api';
+import Context, { IContext } from '../../context/Context';
+import { IGiftList } from '../UserPanel';
 
 type TGiftBase = {
   id: number;
   name: string;
-  imageUri: string;
+  image_uri: string;
   requestedAmount?: number;
   confirmedAmount?: number;
   color?: string;
@@ -43,22 +46,15 @@ export type TGift = TGiftElectrical | TGiftNonElectrical;
 
 export default function GiftList() {
   const routeParams = useParams();
-  const location = useLocation();
   const { width } = useWindowDimensions();
+  const { handleOverlayActive }: IContext = useContext(Context);
 
   const isMobile = width <= 767;
 
   const [selectedTab, setSelectedTab] = useState<number>(1);
   const [selectedGiftsMock, setSelectedGiftsMock] = useState<TGift[]>([]);
-  const [examplesGifts, setExamplesGifts] = useState<TGift[]>([
-    { id: 1, name: 'Almofada para sofá', imageUri: 'https://d2r9epyceweg5n.cloudfront.net/stores/395/200/products/cinza-601-964249b258b2ba1cbf16173035072856-1024-1024.png', },
-    { id: 2, name: 'Amassador de batata', imageUri: 'https://d2r9epyceweg5n.cloudfront.net/stores/822/939/products/519105-amassador-de-batatas-inox-cook-original-sl05461-4a5f5884d2353c9d4716933357609923-640-0.png', },
-    { id: 3, name: 'Aparelho de jantar', imageUri: 'https://www.matissecasa.com.br/upload/produto/imagem/aparelho-de-jantar-goa-vista-alegre-18-pe-as.png', },
-    { id: 4, name: 'Aspirador de pó', imageUri: 'https://content.electrolux.com.br/brasil/electrolux/a10n1-22/images/A10N1-1.png', electrical: true, voltage: '', },
-    // { id: 5, name: 'Aspirador de pó', imageUri: 'https://content.electrolux.com.br/brasil/electrolux/a10n1-22/images/A10N1-1.png', electrical: true, voltage: '', },
-    // { id: 6, name: 'Aspirador de pó', imageUri: 'https://content.electrolux.com.br/brasil/electrolux/a10n1-22/images/A10N1-1.png', electrical: true, voltage: '', },
-    // { id: 7, name: 'Aspirador de pó', imageUri: 'https://content.electrolux.com.br/brasil/electrolux/a10n1-22/images/A10N1-1.png', electrical: true, voltage: '', },
-  ]);
+  const [examplesGifts, setExamplesGifts] = useState<TGift[]>([]);
+  const [giftList, setGiftList] = useState<IGiftList>();
   const [, setRefresh] = useState<boolean>(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedModalItem, setSelectedModalItem] = useState<TGift | undefined>();
@@ -130,6 +126,41 @@ export default function GiftList() {
     return;
   }
 
+  async function getGiftList() {
+    try {
+      handleOverlayActive(true);
+
+      const response = await api.get(`/giftLists/${routeParams.id}`);
+
+      if (response.status === 200) {
+        setGiftList(response.data);
+
+        getGiftModels(response.data.list_type_id);
+      }
+
+    } catch (error: any) {
+      toast.error('Falha ao obter lista de presente. ' + error.message);
+    } finally {
+      handleOverlayActive(false);
+    }
+  }
+
+  async function getGiftModels(listTypeId: string) {
+    try {
+      const response = await api.get('/giftModels', {
+        params: {
+          listTypeId: listTypeId
+        }
+      });
+
+      if (response.status === 200) {
+        setExamplesGifts(response.data);
+      }
+    } catch (error: any) {
+      toast.error('Não foi possível obter exemplos de presente. ' + error.message);
+    }
+  }
+
 
   function Modal() {
     return (
@@ -162,8 +193,8 @@ export default function GiftList() {
           <ModalContentContainer>
             <h2 style={{ alignSelf: 'center' }}>{selectedModalItem?.name ?? 'Cadastro de Presente'}</h2>
             <br />
-            {selectedModalItem?.imageUri && <img src={selectedModalItem.imageUri} alt={selectedModalItem?.name ?? 'Foto do Item Modal'} />}
-            <FormContainer onSubmit={(e) => handleSubmitEdit(e, !(!selectedModalItem?.name && !selectedModalItem?.imageUri))}>
+            {selectedModalItem?.image_uri && <img src={selectedModalItem.image_uri} alt={selectedModalItem?.name ?? 'Foto do Item Modal'} />}
+            <FormContainer onSubmit={(e) => handleSubmitEdit(e, !(!selectedModalItem?.name && !selectedModalItem?.image_uri))}>
               <CustomInputContainer>
                 <label>Nome</label>
                 <input
@@ -191,7 +222,7 @@ export default function GiftList() {
                   />
                 </CustomInputContainer>
               </CustomInputWrapper>
-              {(!selectedModalItem?.name && !selectedModalItem?.imageUri) &&
+              {(!selectedModalItem?.name && !selectedModalItem?.image_uri) &&
                 <CustomInputContainer>
                   <label>É um produto elétrico?</label>
                   <select
@@ -204,7 +235,7 @@ export default function GiftList() {
                   </select>
                 </CustomInputContainer>
               }
-              {(selectedModalItem?.electrical || (!selectedModalItem?.name && !selectedModalItem?.imageUri && selectElectricalInputValue === 'Sim')) &&
+              {(selectedModalItem?.electrical || (!selectedModalItem?.name && !selectedModalItem?.image_uri && selectElectricalInputValue === 'Sim')) &&
                 <CustomInputContainer>
                   <label>Voltagem</label>
                   <select
@@ -239,7 +270,7 @@ export default function GiftList() {
                 type='submit'
               >
                 <IconeDinamico nome='AiOutlineCheckCircle' />
-                {!selectedModalItem?.name && !selectedModalItem?.imageUri ? 'Cadastrar' : 'Salvar'}
+                {!selectedModalItem?.name && !selectedModalItem?.image_uri ? 'Cadastrar' : 'Salvar'}
               </ActionButton>
             </FormContainer>
           </ModalContentContainer>
@@ -253,7 +284,7 @@ export default function GiftList() {
       const miss = 4 - (selectedGiftsMock.length % 4);
 
       for (let index = 0; index < miss; index++) {
-        selectedGiftsMock.push({ id: 9999999, name: '', imageUri: '', requestedAmount: 0, confirmedAmount: 0 });
+        selectedGiftsMock.push({ id: 9999999, name: '', image_uri: '', requestedAmount: 0, confirmedAmount: 0 });
       }
       setRefresh(prev => !prev);
     }
@@ -267,7 +298,7 @@ export default function GiftList() {
       const miss = 4 - (examplesGifts.length % 4);
 
       for (let index = 0; index < miss; index++) {
-        examplesGifts.push({ id: 9999999, name: '', imageUri: '', requestedAmount: 0, confirmedAmount: 0 });
+        examplesGifts.push({ id: 9999999, name: '', image_uri: '', requestedAmount: 0, confirmedAmount: 0 });
       }
       setRefresh(prev => !prev);
     }
@@ -276,10 +307,14 @@ export default function GiftList() {
 
   }, [examplesGifts]);
 
+  useEffect(() => {
+    getGiftList();
+  }, [])
+
   return (
     <Container>
       <Modal />
-      <h2>{location.state?.name ?? ''}</h2>
+      <h2>{giftList?.name ?? ''}</h2>
       <p>Adicione, Crie ou Remova presentes da sua lista!</p>
       <br />
       <TabsContainer>
