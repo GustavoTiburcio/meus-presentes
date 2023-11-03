@@ -4,9 +4,13 @@
   "main": "server.ts",
   "license": "MIT",
   "author": "Gustavo Tiburcio",
+  "engines": {
+    "node": "16"
+  },
   "scripts": {
-    "start": "ts-node src/server.ts",
-    "dev": "nodemon src/server.ts"
+    "start": "node dist/server.js",
+    "dev": "nodemon src/server.ts",
+    "build": "tsc -p tsconfig.json"
   },
   "devDependencies": {
     "@types/cors": "^2.8.15",
