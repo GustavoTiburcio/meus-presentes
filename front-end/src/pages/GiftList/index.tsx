@@ -67,63 +67,76 @@ export default function GiftList() {
   const modalObservationInputRef = useRef<HTMLInputElement | null>(null);
   const modalImageInputRef = useRef<HTMLInputElement | null>(null);
 
-  function handleSubmitEdit(e: React.FormEvent<HTMLFormElement>, editando: boolean) {
-    e.preventDefault();
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>, editando: boolean) {
+    try {
+      e.preventDefault();
+      handleOverlayActive(true);
 
-    if (!modalRequestedAmountInputRef.current?.value) {
-      toast.warning('Verifique a quantidade informada.');
-      return;
-    }
+      if (!modalRequestedAmountInputRef.current?.value) {
+        toast.warning('Verifique a quantidade informada.');
+        return;
+      }
 
-    if (!modalNameInputRef.current?.value) {
-      toast.warning('Verifique o nome do presente.');
-      return;
-    }
+      if (!modalNameInputRef.current?.value) {
+        toast.warning('Verifique o nome do presente.');
+        return;
+      }
 
-    if (editando) {
-      setSelectedGiftsMock(prev => prev.map((giftMock: any) => {
-        if (giftMock.id === selectedModalItem?.id) {
-          return {
-            id: giftMock.id,
-            name: modalNameInputRef.current?.value,
-            imageUri: giftMock.imageUri,
-            requestedAmount: modalRequestedAmountInputRef.current?.value,
-            color: modalColorInputRef.current?.value,
-            observation: modalObservationInputRef.current?.value,
-            ...(giftMock?.electrical && { electrical: giftMock.electrical, voltage: modalVoltageInputRef.current?.value ?? '' })
+      if (editando) {
+        setSelectedGiftsMock(prev => prev.map((giftMock: any) => {
+          if (giftMock.id === selectedModalItem?.id) {
+            return {
+              id: giftMock.id,
+              name: modalNameInputRef.current?.value,
+              image_uri: giftMock.image_uri,
+              requestedAmount: modalRequestedAmountInputRef.current?.value,
+              color: modalColorInputRef.current?.value,
+              observation: modalObservationInputRef.current?.value,
+              ...(giftMock?.electrical && { electrical: giftMock.electrical, voltage: modalVoltageInputRef.current?.value ?? '' })
+            }
           }
+
+          return giftMock;
+        }));
+
+        toast.success('Presente foi atualizado ✔');
+
+        return;
+      }
+
+      const newItem = [{
+        id: 8,
+        name: modalNameInputRef.current?.value,
+        image_uri: 'https://louisville.edu/research/handaresearchlab/pi-and-students/photos/nocamera.png/image',
+        requestedAmount: modalRequestedAmountInputRef.current?.value,
+        color: modalColorInputRef.current?.value,
+        observation: modalObservationInputRef.current?.value,
+        ...(selectElectricalInputValue === 'Sim' && { electrical: true, voltage: modalVoltageInputRef.current?.value ?? '' })
+      }];
+
+      if (modalImageInputRef.current?.files) {
+        const imageShackUri = await handleFileUpload(modalImageInputRef.current.files[0]);
+
+        if (imageShackUri) {
+          newItem[0].image_uri = 'https://' + imageShackUri;
         }
+      }
 
-        return giftMock;
-      }));
+      console.log(newItem);
+      setSelectedGiftsMock((prev: any) => {
+        return [...prev.filter((selectedGift: any) => JSON.stringify(selectedGift) !== JSON.stringify({ id: 9999999, name: '', image_uri: '', requestedAmount: 0, confirmedAmount: 0 })), ...newItem];
+      });
 
-      toast.success('Presente foi atualizado ✔');
+      toast.success(`${modalNameInputRef.current?.value} foi adicionado a lista 😁`);
+
+      return;
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
       setModalVisible(false);
       setSelectedModalItem(undefined);
-
-      return;
+      handleOverlayActive(false);
     }
-
-    const newItem = [{
-      id: 8,
-      name: modalNameInputRef.current?.value,
-      imageUri: 'https://louisville.edu/research/handaresearchlab/pi-and-students/photos/nocamera.png/image',
-      requestedAmount: modalRequestedAmountInputRef.current?.value,
-      color: modalColorInputRef.current?.value,
-      observation: modalObservationInputRef.current?.value,
-      ...(selectElectricalInputValue === 'Sim' && { electrical: true, voltage: modalVoltageInputRef.current?.value ?? '' })
-    }];
-
-
-    setSelectedGiftsMock((prev: any) => {
-      return [...prev.filter((selectedGift: any) => JSON.stringify(selectedGift) !== JSON.stringify({ id: 9999999, name: '', imageUri: '', requestedAmount: 0, confirmedAmount: 0 })), ...newItem];
-    });
-
-    toast.success(`${modalNameInputRef.current?.value} foi adicionado a lista 😁`);
-    setModalVisible(false);
-    setSelectedModalItem(undefined);
-
-    return;
   }
 
   async function getGiftList() {
@@ -161,6 +174,29 @@ export default function GiftList() {
     }
   }
 
+  async function handleFileUpload(file: any) {
+    try {
+      if (!file) return;
+
+      const formData = new FormData();
+
+      formData.append('file', file);
+      formData.append('api_key', import.meta.env.VITE_IMAGESHACK_API_KEY);
+      formData.append('album', '5D7A9X5A');
+
+      const response = await api.post('http://api.imageshack.com/v2/images', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+
+      if (response.status === 200) return response.data.result.images[0].direct_link
+
+    } catch (error: any) {
+      toast.error('Não foi possível salvar imagem. ' + error.message);
+    }
+  };
+
 
   function Modal() {
     return (
@@ -194,7 +230,7 @@ export default function GiftList() {
             <h2 style={{ alignSelf: 'center' }}>{selectedModalItem?.name ?? 'Cadastro de Presente'}</h2>
             <br />
             {selectedModalItem?.image_uri && <img src={selectedModalItem.image_uri} alt={selectedModalItem?.name ?? 'Foto do Item Modal'} />}
-            <FormContainer onSubmit={(e) => handleSubmitEdit(e, !(!selectedModalItem?.name && !selectedModalItem?.image_uri))}>
+            <FormContainer onSubmit={(e) => handleSubmit(e, !(!selectedModalItem?.name && !selectedModalItem?.image_uri))}>
               <CustomInputContainer>
                 <label>Nome</label>
                 <input
@@ -263,6 +299,7 @@ export default function GiftList() {
                 <input
                   type='file'
                   accept='image/png, image/jpeg'
+                  // onChange={handleFileUpload}
                   ref={modalImageInputRef}
                 />
               </CustomInputContainer>
