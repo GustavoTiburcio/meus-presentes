@@ -48,3 +48,15 @@ CREATE TABLE IF NOT EXISTS gift_lists(
   FOREIGN KEY(list_type_id) REFERENCES list_types(id),
   FOREIGN KEY(user_id) REFERENCES users(id)
 );
+
+CREATE TABLE IF NOT EXISTS gift_models(
+  id UUID NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+  name VARCHAR NOT NULL,
+  list_type_id UUID,
+  image_uri VARCHAR,
+  electrical BOOLEAN,
+  voltage VARCHAR,
+  created_at TIMESTAMP DEFAULT now(),
+  PRIMARY KEY (id),
+  FOREIGN KEY(list_type_id) REFERENCES list_types(id)
+);

@@ -67,7 +67,6 @@ class GiftListControllers {
       const user = await UserRepository.findById(giftList.user_id);
 
       if (user) {
-
         sendEmail({
           receiver: user.email,
           subject: 'MeusPresentes.com.br - Sua lista já está disponível!! 🎉',
@@ -126,7 +125,7 @@ class GiftListControllers {
       return response.status(400).json({ error: 'event_date is required' });
     }
 
-    const contact = await GiftListRepository.update(id, {
+    const giftList = await GiftListRepository.update(id, {
       name,
       list_type_id,
       event_date,
@@ -136,7 +135,7 @@ class GiftListControllers {
       observation
     });
 
-    response.json(contact);
+    response.json(giftList);
   }
 
   async delete(request: express.Request, response: express.Response) {

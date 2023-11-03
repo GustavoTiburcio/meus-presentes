@@ -59,9 +59,9 @@ export default function UserPanel() {
     window.open(encodeURI(`https://api.whatsapp.com/send?text=Confira minha lista de presentes!! Acesso em: ${url}`));
   }
 
-  async function deleteGiftList(id: string) {
+  async function deleteGiftList(id: string, name: string) {
     try {
-      if (confirm('Deseja mesmo apagar?')) {
+      if (confirm(`Deseja mesmo apagar ${name}?`)) {
         handleOverlayActive(true);
 
         const response = await api.delete(`/giftLists/${id}`);
@@ -160,7 +160,7 @@ export default function UserPanel() {
                   <IconeDinamico nome='AiOutlineShareAlt' />
                   Compartilhar
                 </ButtonOption>
-                <ButtonOption onClick={() => deleteGiftList(list.id)}>
+                <ButtonOption onClick={() => deleteGiftList(list.id, list.name)}>
                   <IconeDinamico nome='AiOutlineDelete' />
                   Excluir Lista
                 </ButtonOption>

@@ -19,7 +19,7 @@ import { ActionButton, CustomInputContainer, FormContainer } from '../../compone
 import IconeDinamico from '../../components/IconeDinamico';
 import { Button } from '../../components/Presentation/styles';
 
-type IGiftBase = {
+type TGiftBase = {
   id: number;
   name: string;
   imageUri: string;
@@ -29,12 +29,12 @@ type IGiftBase = {
   observation?: string;
 };
 
-type TGiftElectrical = IGiftBase & {
+type TGiftElectrical = TGiftBase & {
   electrical: true;
   voltage: '220v' | '110v' | '24v' | '12v' | '';
 };
 
-type TGiftNonElectrical = IGiftBase & {
+type TGiftNonElectrical = TGiftBase & {
   electrical?: false;
   voltage?: never;
 };

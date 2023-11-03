@@ -18,7 +18,7 @@ class GiftListRepository {
     const direction = orderBy.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
 
     if (userId) {
-      const rows = await query(`SELECT * FROM gift_lists where user_id=$1 ORDER BY name ${direction}`, [userId]);
+      const rows = await query(`SELECT * FROM gift_lists WHERE user_id=$1 ORDER BY name ${direction}`, [userId]);
       return rows;
     }
 
