@@ -14,9 +14,9 @@ export const Container = styled.div`
 `;
 
 export const Image = styled.img`
+  width: 10%;
   animation: 3s ${flashAnimation};
   animation-iteration-count: infinite;
-
 `;
 
 export const LoaderDefault = styled.span`

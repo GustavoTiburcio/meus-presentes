@@ -12,6 +12,8 @@ import Context, { IContext, ILoginData } from './context/Context';
 import api from './service/api';
 import styled from 'styled-components';
 
+import logoUri from './assets/images/logo.svg';
+
 const StyledLoader = styled(LoadingOverlay)`
   min-height: 100vh;
 `
@@ -21,8 +23,6 @@ export default function App() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [overlayLoadingActive, setOverlayLoadingActive] = useState(false);
   const [error, setError] = useState<string>('');
-  const logoUri = 'https://www.confirmeja.com.br/images/logo.png';
-
 
   const contextValues: IContext = {
     loginData,

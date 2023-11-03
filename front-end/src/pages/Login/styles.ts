@@ -14,6 +14,7 @@ export const Container = styled.div`
 `;
 
 export const Logo = styled.img`
+  width: 7%;
   cursor: pointer;
   margin: 2rem 0px;
 `;

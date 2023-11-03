@@ -68,7 +68,7 @@ export const LogoDiv = styled.div`
 
 export const Logo = styled.img`
   cursor: pointer;
-  max-height: 5rem;
+  max-height: 6rem;
   @media screen and (max-width: 767px) {
     max-height: 4rem;
   }
