@@ -1,11 +1,8 @@
 import { Client } from 'pg';
 
 const client = new Client({
-  host: process.env.HOSTNAME || 'localhost',
-  port: process.env.PORT ? +process.env.PORT : 5433,
-  user: process.env.USER || 'postgres',
-  password: process.env.PASSWORD || '1',
-  database: process.env.DATABASE || 'meuspresentes'
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:1@localhost:5433/meuspresentes',
+  ssl: false,
 });
 
 client.connect();
