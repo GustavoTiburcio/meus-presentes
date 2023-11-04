@@ -1,8 +1,12 @@
 import { Client } from 'pg';
+import dotenv from 'dotenv';
 
+dotenv.config();
+
+//ssl:true needed for prodution
 const client = new Client({
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:1@localhost:5433/meuspresentes',
-  ssl: false,
+  connectionString: process.env.DATABASE_URL,
+  ssl: true
 });
 
 client.connect();
