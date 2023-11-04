@@ -18,6 +18,6 @@ export interface ILoginData {
   password: string;
 }
 
-const Context = createContext<IContext>({});
+const Context = createContext<any>({});
 
 export default Context;

@@ -1,4 +1,4 @@
-export function cnpjMask(v:string) {
+export function cnpjMask(v:any) {
   v = v.replace(/\D/g, '');                           //Remove tudo o que não é dígito
   v = v.replace(/^(\d{2})(\d)/, '$1.$2');             //Coloca ponto entre o segundo e o terceiro dígitos
   v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3'); //Coloca ponto entre o quinto e o sexto dígitos
@@ -7,7 +7,7 @@ export function cnpjMask(v:string) {
   return v;
 }
 
-export function cpfMask(v:string) {
+export function cpfMask(v:any) {
   v = v.replace(/\D/g, '');                   //Remove tudo o que não é dígito
   v = v.replace(/(\d{3})(\d)/, '$1.$2');       //Coloca um ponto entre o terceiro e o quarto dígitos
   v = v.replace(/(\d{3})(\d)/, '$1.$2');       //Coloca um ponto entre o terceiro e o quarto dígitos
@@ -16,12 +16,12 @@ export function cpfMask(v:string) {
   return v;
 }
 
-export function validaEmail(email: string) {
+export function validaEmail(email: any) {
   const re = /\S+@\S+\.\S+/;
   return re.test(email);
 }
 
-export function validaCpfCnpj(val: string) {
+export function validaCpfCnpj(val: any) {
   if (val.length == 14) {
     let cpf = val.trim();
 

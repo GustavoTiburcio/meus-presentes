@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { CloseIconDiv, Container } from './styles';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import * as FaIcons from 'react-icons/fa';
 
 export default function SideBarMobile() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);

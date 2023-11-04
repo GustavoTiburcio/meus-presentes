@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import * as FiIcons from 'react-icons/fi';
 import { Button, Container, Input } from './styles';
 import { toast } from 'react-toastify';
