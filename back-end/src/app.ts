@@ -6,7 +6,7 @@ require('express-async-errors');
 
 import { router } from './routes';
 
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173'];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173', 'https://meuspresentes.netlify.app'];
 dotenv.config();
 
 //Create app
