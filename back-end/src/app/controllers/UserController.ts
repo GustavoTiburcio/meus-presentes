@@ -1,6 +1,9 @@
 import express from 'express';
 import UserRepository from '../repositories/UserRepository';
 import { isEmailValid, isValidUUIDv4, sendEmail } from '../../utils';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 class UserController {
   async index(request: express.Request, response: express.Response) {
@@ -58,7 +61,7 @@ class UserController {
     if (user) {
       sendEmail({
         receiver: user.email,
-        subject: 'Bem-vindo ao MeusPresentes.com.br - O lugar onde a diversão começa! 🎉',
+        subject: `Bem-vindo ao MeusPresentes.com.br - O lugar onde a diversão começa! 🎉`,
         body: `
           <!DOCTYPE html>
           <html>
@@ -73,7 +76,7 @@ class UserController {
                   Prepare-se para entrar na maravilhosa jornada de criar listas de presentes inesquecíveis com o MeusPresentes.com.br! Estamos super empolgados por você estar aqui, e não podemos esperar para ver como você vai tornar seus eventos ainda mais incríveis.
               </p>
               <p>
-                  No MeusPresentes.com.br, a diversão é a regra do jogo! Aqui você pode criar listas de presentes personalizadas, compartilhar alegria com amigos e familiares e ter a certeza de que todos os seus presentes serão simplesmente perfeitos. 🎁✨
+                  No MeusPresentes, a diversão é a regra do jogo! Aqui você pode criar listas de presentes personalizadas, compartilhar alegria com amigos e familiares e ter a certeza de que todos os seus presentes serão simplesmente perfeitos. 🎁✨
               </p>
               <h2>O que você pode fazer no MeusPresentes.com.br:</h2>
               <ul>
@@ -90,7 +93,7 @@ class UserController {
                   Mais uma vez, seja muito bem-vindo ao MeusPresentes.com.br! Mal podemos esperar para fazer parte das suas comemorações. 🎂🥳
               </p>
               <p>Um grande abraço,</p>
-              <p>Gustavo Tiburcio 😎<br>Desenvolvedor 🚀<br>MeusPresentes.com.br 🎊</p>
+              <p>Gustavo Tiburcio 😎<br>Desenvolvedor 🚀<br>${process.env.SITE_URL} 🎊</p>
           </body>
           </html>
       `

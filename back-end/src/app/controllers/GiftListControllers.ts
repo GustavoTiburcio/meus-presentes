@@ -2,6 +2,9 @@ import express from 'express';
 import GiftListRepository from '../repositories/GiftListRepository';
 import UserRepository from '../repositories/UserRepository';
 import { isValidUUIDv4, sendEmail } from '../../utils';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 class GiftListControllers {
   async index(request: express.Request, response: express.Response) {
@@ -73,7 +76,7 @@ class GiftListControllers {
       if (user) {
         sendEmail({
           receiver: user.email,
-          subject: 'MeusPresentes.com.br - Sua lista já está disponível!! 🎉',
+          subject: `MeusPresentes.com.br - Sua lista já está disponível!! 🎉`,
           body: `
             <!DOCTYPE html>
             <html>
@@ -85,11 +88,11 @@ class GiftListControllers {
                 <h1>Sua Lista de Presentes ${giftList.name} já está disponível 🎉</h1>
                 <p>
                     Oi ${user.name}! 🌟<br><br>
-                    Sua lista de presentes foi criada e já está acessível em www.meuspresentes.com.br/${giftList.id}
+                    Sua lista de presentes foi criada e já está acessível em ${process.env.SITE_URL}/${giftList.id}
                 </p>
                 <p>Copie e envie o link acima para os seus convidados.</p>
                 <p>Um grande abraço,</p>
-                <p>Gustavo Tiburcio 😎<br>Desenvolvedor 🚀<br>MeusPresentes.com.br 🎊</p>
+                <p>Gustavo Tiburcio 😎<br>Desenvolvedor 🚀<br>${process.env.SITE_URL} 🎊</p>
             </body>
             </html>
         `
