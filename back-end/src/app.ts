@@ -6,7 +6,7 @@ require('express-async-errors');
 
 import { router } from './routes';
 
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173', 'https://meuspresentes.vercel.app'];
+const allowedOrigins = ['https://meuspresentes.vercel.app', 'https://meuspresentes.com.br'];
 dotenv.config();
 
 //Create app
