@@ -61,24 +61,24 @@ class UserController {
     if (user) {
       sendEmail({
         receiver: user.email,
-        subject: `Bem-vindo ao MeusPresentes - O lugar onde a diversão começa! 🎉`,
+        subject: `Bem-vindo ao MeusPresentes.com.br - O lugar onde a diversão começa! 🎉`,
         body: `
           <!DOCTYPE html>
           <html>
           <head>
               <meta charset="UTF-8">
-              <title>Bem-vindo ao MeusPresentes 🎉</title>
+              <title>Bem-vindo ao MeusPresentes.com.br 🎉</title>
           </head>
           <body>
-              <h1>Bem-vindo ao MeusPresentes - O lugar onde a diversão começa! 🎉</h1>
+              <h1>Bem-vindo ao MeusPresentes.com.br - O lugar onde a diversão começa! 🎉</h1>
               <p>
                   Oi ${user.name}! 🌟<br><br>
-                  Prepare-se para entrar na maravilhosa jornada de criar listas de presentes inesquecíveis com o MeusPresentes! Estamos super empolgados por você estar aqui, e não podemos esperar para ver como você vai tornar seus eventos ainda mais incríveis.
+                  Prepare-se para entrar na maravilhosa jornada de criar listas de presentes inesquecíveis com o MeusPresentes.com.br! Estamos super empolgados por você estar aqui, e não podemos esperar para ver como você vai tornar seus eventos ainda mais incríveis.
               </p>
               <p>
                   No MeusPresentes, a diversão é a regra do jogo! Aqui você pode criar listas de presentes personalizadas, compartilhar alegria com amigos e familiares e ter a certeza de que todos os seus presentes serão simplesmente perfeitos. 🎁✨
               </p>
-              <h2>O que você pode fazer no MeusPresentes:</h2>
+              <h2>O que você pode fazer no MeusPresentes.com.br:</h2>
               <ul>
                   <li>🎈 Criar listas de presentes para casamentos, aniversários, chás de bebê, formaturas e tudo o mais.</li>
                   <li>🎯 Adicionar itens de diferentes lojas e sites às suas listas de presentes.</li>
@@ -87,10 +87,10 @@ class UserController {
                   <li>🙌 Acompanhar os presentes que você recebeu e agradecer aos doadores com um sorriso.</li>
               </ul>
               <p>
-                  Pegue seu chapéu de festa e comece a criar memórias incríveis com a gente. MeusPresentes está aqui para tornar seus eventos simplesmente incríveis.
+                  Pegue seu chapéu de festa e comece a criar memórias incríveis com a gente. MeusPresentes.com.br está aqui para tornar seus eventos simplesmente incríveis.
               </p>
               <p>
-                  Mais uma vez, seja muito bem-vindo ao MeusPresentes! Mal podemos esperar para fazer parte das suas comemorações. 🎂🥳
+                  Mais uma vez, seja muito bem-vindo ao MeusPresentes.com.br! Mal podemos esperar para fazer parte das suas comemorações. 🎂🥳
               </p>
               <p>Um grande abraço,</p>
               <p>Gustavo Tiburcio 😎<br>Desenvolvedor 🚀<br>${process.env.SITE_URL} 🎊</p>

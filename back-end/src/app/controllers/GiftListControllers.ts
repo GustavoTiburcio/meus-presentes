@@ -76,7 +76,7 @@ class GiftListControllers {
       if (user) {
         sendEmail({
           receiver: user.email,
-          subject: `MeusPresentes - Sua lista já está disponível!! 🎉`,
+          subject: `MeusPresentes.com.br - Sua lista já está disponível!! 🎉`,
           body: `
             <!DOCTYPE html>
             <html>
