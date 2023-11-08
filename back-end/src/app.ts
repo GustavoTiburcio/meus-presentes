@@ -37,12 +37,12 @@ app.use(cors({
 app.use((error: any, req: any, res: any, next: any) => {
   if (error instanceof Error) {
     if (error.message === 'The CORS policy for this site does not allow access from the specified Origin.') {
-      res.status(403).json({ error: 'Acesso não permitido de origem não autorizada.' });
+      res.status(403).json({ error: 'Forbidden access from unauthorized sources.' });
     } else {
       next(error);
     }
   } else {
-    // Outros tipos de erros
+    // Other errors
     next(error);
   }
 });

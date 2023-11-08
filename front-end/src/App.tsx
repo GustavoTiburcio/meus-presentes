@@ -64,7 +64,7 @@ export default function App() {
       throw new Error("Não foi possível autenticar login");
     } catch (error: any) {
       Cookies.remove('@loginData', { domain: window.location.hostname });
-      if (error.response.status === 401) {
+      if (error.response?.status === 401) {
         toast.error('Usuário e/ou senha inválidos.');
         return;
       }

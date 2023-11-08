@@ -43,18 +43,18 @@ export default function Login() {
   ];
 
   async function getLogin({ email, password }: ILoginData) {
-      if (!email || !password) {
-        toast.warning('Credenciais inválidas. Verique os campos digitados.');
-        return;
-      }
+    if (!email || !password) {
+      toast.warning('Credenciais inválidas. Verique os campos digitados.');
+      return;
+    }
 
-      const response = await loginAuth({email, password});
+    const response = await loginAuth({ email, password });
 
-      if (response) {
-        toast.success(`Bem-vindo(a)!! Fique a vontade 😉`);
-        navigate('/painelDeUsuario');
-        return;
-      }
+    if (response) {
+      toast.success(`Bem-vindo(a)!! Fique a vontade 😉`);
+      navigate('/painelDeUsuario');
+      return;
+    }
   }
 
   async function postNewAccount(newAccount: ILoginData) {
