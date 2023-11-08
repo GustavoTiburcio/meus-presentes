@@ -4,6 +4,7 @@ import LoginController from '../app/controllers/LoginController';
 import ListTypesController from '../app/controllers/ListTypesController';
 import GiftListControllers from '../app/controllers/GiftListControllers';
 import GiftModelsController from '../app/controllers/GiftModelsController';
+import GiftsController from '../app/controllers/GiftsController';
 
 export const router = Router();
 
@@ -35,3 +36,10 @@ router.get('/giftModels/:id', GiftModelsController.show);
 router.post('/giftModels', GiftModelsController.store);
 router.put('/giftModels/:id', GiftModelsController.update);
 router.delete('/giftModels/:id', GiftModelsController.delete);
+
+//Gifts
+router.get('/gifts', GiftsController.index);
+router.get('/gifts/:id', GiftsController.show);
+router.post('/gifts', GiftsController.store);
+router.put('/gifts/:id', GiftsController.update);
+router.delete('/gifts/:id', GiftsController.delete);

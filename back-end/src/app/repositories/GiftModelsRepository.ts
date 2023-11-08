@@ -20,7 +20,7 @@ type TGiftModelNonElectrical = TGiftModelBase & {
   voltage?: never;
 };
 
-type TGiftModel = TGiftModelElectrical | TGiftModelNonElectrical;
+export type TGiftModel = TGiftModelElectrical | TGiftModelNonElectrical;
 
 class GiftModelsRepository {
   async findAll(listTypeId = '', orderBy = 'ASC') {
