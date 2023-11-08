@@ -40,9 +40,12 @@ class GiftModelsController {
     //Create new row;
     const {
       name,
-      imageUri,
+      image_uri,
       electrical,
       voltage,
+      requested_amount,
+      color,
+      observation,
       gift_list_id,
     } = request.body;
 
@@ -58,6 +61,12 @@ class GiftModelsController {
     if (electrical && !voltage) {
       return response.status(400).json({ error: 'property voltage is required when electrical is true' });
     }
+    if (!requested_amount) {
+      return response.status(400).json({ error: 'property requestedAmount is required' });
+    }
+    if (requested_amount <= 0) {
+      return response.status(400).json({ error: 'property requestedAmount must be greater than 0' });
+    }
 
     const giftListExists = await GiftListRepository.findById(gift_list_id);
 
@@ -67,9 +76,12 @@ class GiftModelsController {
 
     const gift = await GiftsRepository.create({
       name,
-      imageUri,
+      image_uri,
       electrical,
       voltage,
+      requested_amount,
+      color,
+      observation,
       gift_list_id,
     });
 
@@ -86,10 +98,12 @@ class GiftModelsController {
 
     const {
       name,
-      imageUri,
+      image_uri,
       electrical,
       voltage,
-      gift_list_id,
+      requested_amount,
+      color,
+      observation,
     } = request.body;
 
     const giftExists = await GiftsRepository.findById(id);
@@ -103,12 +117,21 @@ class GiftModelsController {
     if (electrical && !voltage) {
       return response.status(400).json({ error: 'property voltage is required when electrical is true' });
     }
+    if (!requested_amount) {
+      return response.status(400).json({ error: 'property requestedAmount is required' });
+    }
+    if (requested_amount <= 0) {
+      return response.status(400).json({ error: 'property requestedAmount must be greater than 0' });
+    }
 
     const giftModel = await GiftsRepository.update(id, {
       name,
-      imageUri,
+      image_uri,
       electrical,
-      voltage
+      voltage,
+      requested_amount,
+      color,
+      observation,
     });
 
     response.json(giftModel);

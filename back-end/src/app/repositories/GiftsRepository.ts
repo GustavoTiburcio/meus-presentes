@@ -5,6 +5,10 @@ type IGiftBase = Omit<TGiftModel, 'list_type_id'>;
 
 interface IGift extends IGiftBase {
   gift_list_id?: string;
+  requested_amount?: number;
+  confirmed_amount?: number;
+  color?: string;
+  observation?: string;
 }
 
 class GiftsRepository {
@@ -27,30 +31,36 @@ class GiftsRepository {
 
   async create({
     name,
-    imageUri,
+    image_uri,
     electrical,
     voltage,
+    requested_amount,
+    color,
+    observation,
     gift_list_id,
   }: IGift) {
     const [row] = await query(`
-      INSERT INTO gifts(name, image_uri, electrical, voltage, gift_list_id)
-      VALUES($1, $2, $3, $4, $5)
+      INSERT INTO gifts(name, image_uri, electrical, voltage, requested_amount, color, observation, gift_list_id)
+      VALUES($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *
-    `, [name, imageUri, electrical, voltage, gift_list_id]);
+    `, [name, image_uri, electrical, voltage, requested_amount, color, observation, gift_list_id]);
     return row;
   }
 
   async update(id: string, {
     name,
-    imageUri,
+    image_uri,
     electrical,
-    voltage
+    voltage,
+    requested_amount,
+    color,
+    observation,
   }: IGift) {
     const [row] = await query(`
       UPDATE gifts
-      SET name = $1, image_uri = $2, electrical = $3, voltage = $4
-      WHERE id = $5 RETURNING *
-    `, [name, imageUri, electrical, voltage, id]);
+      SET name = $1, image_uri = $2, electrical = $3, voltage = $4, requested_amount = $5, color = $6, observation = $7
+      WHERE id = $8 RETURNING *
+    `, [name, image_uri, electrical, voltage, requested_amount, color, observation, id]);
     return row;
   }
 

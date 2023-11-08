@@ -40,7 +40,7 @@ class GiftModelsController {
     const {
       name,
       list_type_id,
-      imageUri,
+      image_uri,
       electrical,
       voltage
     } = request.body;
@@ -61,7 +61,7 @@ class GiftModelsController {
     const giftModel = await GiftModelsRepository.create({
       name,
       list_type_id,
-      imageUri,
+      image_uri,
       electrical,
       voltage,
     });
@@ -80,7 +80,7 @@ class GiftModelsController {
     const {
       name,
       list_type_id,
-      imageUri,
+      image_uri,
       electrical,
       voltage
     } = request.body;
@@ -106,7 +106,7 @@ class GiftModelsController {
     const giftModel = await GiftModelsRepository.update(id, {
       name,
       list_type_id,
-      imageUri,
+      image_uri,
       electrical,
       voltage
     });

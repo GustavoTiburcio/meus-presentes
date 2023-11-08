@@ -23,23 +23,29 @@ import Context, { IContext } from '../../context/Context';
 import { IGiftList } from '../UserPanel';
 
 type TGiftBase = {
-  id: number;
+  id?: string;
   name: string;
   image_uri: string;
-  requestedAmount?: number;
-  confirmedAmount?: number;
-  color?: string;
-  observation?: string;
 };
 
 type TGiftElectrical = TGiftBase & {
   electrical: true;
-  voltage: '220v' | '110v' | '24v' | '12v' | '';
+  voltage: string;
+  requested_amount?: number;
+  confirmed_amount?: number;
+  color?: string;
+  observation?: string;
+  gift_list_id?: string;
 };
 
 type TGiftNonElectrical = TGiftBase & {
   electrical?: false;
   voltage?: never;
+  requested_amount?: number;
+  confirmed_amount?: number;
+  color?: string;
+  observation?: string;
+  gift_list_id?: string;
 };
 
 export type TGift = TGiftElectrical | TGiftNonElectrical;
@@ -67,29 +73,35 @@ export default function GiftList() {
   const modalObservationInputRef = useRef<HTMLInputElement | null>(null);
   const modalImageInputRef = useRef<HTMLInputElement | null>(null);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>, editando: boolean) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>, editing: boolean) {
     try {
       e.preventDefault();
-      handleOverlayActive(true);
-
-      if (!modalRequestedAmountInputRef.current?.value) {
+      if (!modalRequestedAmountInputRef.current?.value || +modalRequestedAmountInputRef.current?.value < 1) {
         toast.warning('Verifique a quantidade informada.');
         return;
       }
 
       if (!modalNameInputRef.current?.value) {
-        toast.warning('Verifique o nome do presente.');
+        toast.warning('Informe o nome do presente.');
         return;
       }
 
-      if (editando) {
+      if (selectElectricalInputValue === 'Sim' && !modalVoltageInputRef.current?.value) {
+        toast.warning('Informe a voltagem do presente.');
+        return;
+      }
+
+      handleOverlayActive(true);
+
+
+      if (editing) {
         setSelectedGiftsMock(prev => prev.map((giftMock: any) => {
           if (giftMock.id === selectedModalItem?.id) {
             return {
               id: giftMock.id,
               name: modalNameInputRef.current?.value,
               image_uri: giftMock.image_uri,
-              requestedAmount: modalRequestedAmountInputRef.current?.value,
+              requested_amount: modalRequestedAmountInputRef.current?.value ? +modalRequestedAmountInputRef.current.value : 1,
               color: modalColorInputRef.current?.value,
               observation: modalObservationInputRef.current?.value,
               ...(giftMock?.electrical && { electrical: giftMock.electrical, voltage: modalVoltageInputRef.current?.value ?? '' })
@@ -100,19 +112,34 @@ export default function GiftList() {
         }));
 
         toast.success('Presente foi atualizado ✔');
+        setModalVisible(false);
 
         return;
       }
 
-      const newItem = [{
-        id: 8,
-        name: modalNameInputRef.current?.value,
-        image_uri: 'https://louisville.edu/research/handaresearchlab/pi-and-students/photos/nocamera.png/image',
-        requestedAmount: modalRequestedAmountInputRef.current?.value,
-        color: modalColorInputRef.current?.value,
-        observation: modalObservationInputRef.current?.value,
-        ...(selectElectricalInputValue === 'Sim' && { electrical: true, voltage: modalVoltageInputRef.current?.value ?? '' })
-      }];
+      const newItem: TGift[] = [];
+
+      if (selectElectricalInputValue === 'Sim') {
+        newItem.push({
+          electrical: true,
+          voltage: modalVoltageInputRef.current?.value ?? '',
+          name: modalNameInputRef.current?.value,
+          image_uri: 'https://imagizer.imageshack.com/img923/3689/mkw7ux.png',
+          requested_amount: +modalRequestedAmountInputRef.current?.value ?? 1,
+          color: modalColorInputRef.current?.value,
+          observation: modalObservationInputRef.current?.value,
+          gift_list_id: routeParams.id,
+        });
+      } else {
+        newItem.push({
+          name: modalNameInputRef.current?.value,
+          image_uri: 'https://imagizer.imageshack.com/img923/3689/mkw7ux.png',
+          requested_amount: +modalRequestedAmountInputRef.current?.value ?? 1,
+          color: modalColorInputRef.current?.value,
+          observation: modalObservationInputRef.current?.value,
+          gift_list_id: routeParams.id,
+        });
+      }
 
       if (modalImageInputRef.current?.files) {
         const imageShackUri = await handleFileUpload(modalImageInputRef.current.files[0]);
@@ -122,21 +149,40 @@ export default function GiftList() {
         }
       }
 
-      console.log(newItem);
-      setSelectedGiftsMock((prev: any) => {
-        return [...prev.filter((selectedGift: any) => JSON.stringify(selectedGift) !== JSON.stringify({ id: 9999999, name: '', image_uri: '', requestedAmount: 0, confirmedAmount: 0 })), ...newItem];
-      });
+      const response = await postGift(newItem[0]);
 
-      toast.success(`${modalNameInputRef.current?.value} foi adicionado a lista 😁`);
+      if (response) {
+        setSelectedGiftsMock((prev: any) => {
+          return [...prev.filter((selectedGift: any) => JSON.stringify(selectedGift) !== JSON.stringify({ id: '9999999', name: '', image_uri: '', requestedAmount: 0, confirmedAmount: 0 })), ...newItem];
+        });
+        toast.success(`${newItem[0].name} foi adicionado a sua lista 😁`);
+        setModalVisible(false);
+        return;
+      }
 
-      return;
     } catch (error: any) {
       toast.error(error.message);
     } finally {
-      setModalVisible(false);
       setSelectedModalItem(undefined);
       handleOverlayActive(false);
     }
+  }
+
+  async function getGifts(id: string) {
+    try {
+      const response = await api.get('/gifts', {
+        params: {
+          giftListId: id
+        }
+      });
+
+      if (response.status === 200) {
+        setSelectedGiftsMock(response.data);
+      }
+    } catch (error: any) {
+      toast.error('Não foi possível obter presentes da sua lista. ' + error.message);
+    }
+
   }
 
   async function getGiftList() {
@@ -148,11 +194,12 @@ export default function GiftList() {
       if (response.status === 200) {
         setGiftList(response.data);
 
+        getGifts(response.data.id);
         getGiftModels(response.data.list_type_id);
       }
 
     } catch (error: any) {
-      toast.error('Falha ao obter lista de presente. ' + error.message);
+      toast.error('Falha ao obter informações da sua lista de presente. ' + error.message);
     } finally {
       handleOverlayActive(false);
     }
@@ -170,7 +217,41 @@ export default function GiftList() {
         setExamplesGifts(response.data);
       }
     } catch (error: any) {
-      toast.error('Não foi possível obter exemplos de presente. ' + error.message);
+      toast.error('Não foi possível obter exemplos de presentes para sua lista. ' + error.message);
+    }
+  }
+
+  async function postGift(gift: TGift) {
+    try {
+      const response = await api.post('/gifts', gift);
+
+      if (response.status === 201) {
+        return response.data;
+      }
+    } catch (error: any) {
+      if (error.response.data?.error) {
+        toast.error('Não foi possível adicionar presente. ' + error.response.data?.error);
+        return;
+      }
+      toast.error('Não foi possível adicionar presente. ' + error.message);
+    }
+  }
+
+  async function deleteGift(id: string) {
+    try {
+      if (confirm('Deseja realmente excluir?')) {
+        const response = await api.delete(`/gifts/${id}`);
+
+        if (response.status === 204) {
+          setSelectedGiftsMock((prev: any) => prev.filter((selectedGift: any) =>
+            JSON.stringify(selectedGift) !== JSON.stringify({ id: '9999999', name: '', image_uri: '', requested_amount: 0, confirmed_amount: 0 }) &&
+            (selectedGift.id !== id)
+          ));
+          toast.success('Presente excluído com sucesso!');
+        }
+      }
+    } catch (error: any) {
+      toast.error('Não foi possível excluir presente. ' + error.message);
     }
   }
 
@@ -244,7 +325,7 @@ export default function GiftList() {
                   <label>Quantidade</label>
                   <input
                     placeholder='Quantidade desejada'
-                    defaultValue={selectedModalItem?.requestedAmount ?? ''}
+                    defaultValue={selectedModalItem?.requested_amount ?? ''}
                     ref={modalRequestedAmountInputRef}
                     type='number'
                   />
@@ -321,7 +402,7 @@ export default function GiftList() {
       const miss = 4 - (selectedGiftsMock.length % 4);
 
       for (let index = 0; index < miss; index++) {
-        selectedGiftsMock.push({ id: 9999999, name: '', image_uri: '', requestedAmount: 0, confirmedAmount: 0 });
+        selectedGiftsMock.push({ id: '9999999', name: '', image_uri: '', requested_amount: 0, confirmed_amount: 0 });
       }
       setRefresh(prev => !prev);
     }
@@ -335,7 +416,7 @@ export default function GiftList() {
       const miss = 4 - (examplesGifts.length % 4);
 
       for (let index = 0; index < miss; index++) {
-        examplesGifts.push({ id: 9999999, name: '', image_uri: '', requestedAmount: 0, confirmedAmount: 0 });
+        examplesGifts.push({ id: '9999999', name: '', image_uri: '', requested_amount: 0, confirmed_amount: 0 });
       }
       setRefresh(prev => !prev);
     }
@@ -376,6 +457,7 @@ export default function GiftList() {
               setSelectedGiftsMock={setSelectedGiftsMock}
               setModalVisible={setModalVisible}
               setSelectedModalItem={setSelectedModalItem}
+              deleteGift={deleteGift}
             />
           )) :
           (
@@ -402,6 +484,7 @@ export default function GiftList() {
                   setSelectedGiftsMock={setSelectedGiftsMock}
                   setModalVisible={setModalVisible}
                   setSelectedModalItem={setSelectedModalItem}
+                  deleteGift={deleteGift}
                 />))}
             </GiftsTab2Container>
           </TabContainer>
