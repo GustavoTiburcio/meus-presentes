@@ -96,8 +96,13 @@ export default function Login() {
         toast.warning('Email inválido');
         return;
       }
-      toast.success('tudo certo');
-      setRedefinirPassword(false);
+
+      const response = await api.post('/users/resetPassword', { email });
+
+      if (response.status === 204) {
+        toast.success('Verfique a caixa de entrada do seu email');
+        setRedefinirPassword(false);
+      }
 
     } catch (error: any) {
       toast.error('Falha ao solicitar redefinição de senha. ' + error.message);
@@ -188,7 +193,12 @@ export default function Login() {
             >
               <Title>Recuperação de conta</Title>
               <Input type='email' placeholder='Digite seu email' value={email} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)} />
-              <Button>Enviar email</Button>
+              <Button
+                style={{ marginTop: '20px' }}
+                type='submit'
+              >
+                Enviar email
+              </Button>
               <Anchor onClick={() => setRedefinirPassword(false)}>Acessar conta</Anchor>
             </Form>
           </RedefinirPasswordContainer>
