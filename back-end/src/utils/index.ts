@@ -53,3 +53,17 @@ export function sendEmail(emailMessage: IEmailMessage) {
     console.log(info); 
   });
 }
+
+export function generateRandomPassword(): string {
+  const prefix = "res";
+  const length = 6; // 3 caracteres do prefixo + 6 caracteres aleatórios
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let password = prefix;
+
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    password += characters.charAt(randomIndex);
+  }
+
+  return password;
+}

@@ -1,6 +1,6 @@
 import express from 'express';
 import UserRepository from '../repositories/UserRepository';
-import { isEmailValid, isValidUUIDv4, sendEmail } from '../../utils';
+import { generateRandomPassword, isEmailValid, isValidUUIDv4, sendEmail } from '../../utils';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -111,7 +111,12 @@ class UserController {
       name, email, password
     } = request.body;
 
+    if (!isValidUUIDv4(id)) {
+      return response.status(400).json({ error: 'Invalid UUID string' });
+    }
+
     const userExists = await UserRepository.findById(id);
+
     if (!userExists) {
       return response.status(404).json({ error: 'User not found.' });
     }
@@ -139,6 +144,58 @@ class UserController {
     });
 
     response.json(contact);
+  }
+
+  async passwordUpdate(request: express.Request, response: express.Response) {
+    // Reset password
+    const { email } = request.body;
+
+    if (!email) {
+      return response.status(400).json({ error: 'Email is required' });
+    }
+    if (!isEmailValid(email)) {
+      return response.status(400).json({ error: 'Email invalid format' });
+    }
+
+    const userExists = await UserRepository.findByEmail(email);
+
+    if (!userExists) {
+      return response.status(404).json({ error: 'Email not found.' });
+    }
+
+    const newPassword = generateRandomPassword();
+
+    const updatedUser = await UserRepository.passwordUpdate(userExists.id, newPassword);
+
+    if (updatedUser) {
+      sendEmail({
+        receiver: updatedUser.email,
+        subject: `MeusPresentes.com.br - Redefinição de senha!! ⚠`,
+        body: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <meta charset="UTF-8">
+              <title>MeusPresentes.com.br - Redefinição de senha!! ⚠</title>
+          </head>
+          <body>
+              <h1>MeusPresentes.com.br - Redefinição de senha!! ⚠</h1>
+              <p>
+                  Saudações digitais ${updatedUser.name}! 🌟<br><br>
+                  Sua senha foi redefinida com sucesso! Agora você pode acessar sua conta com a nova senha abaixo:
+              </p>
+              <strong>${updatedUser.password}</strong>
+              <p>⚠ Importante: Se não foi você quem solicitou essa redefinição considere alterar sua senha o quanto antes ⚠</p>
+              <p>Fique em paz,</p>
+              <p>Gustavo Tiburcio 😎<br>Desenvolvedor 🚀<br>${process.env.SITE_URL} 🎊</p>
+          </body>
+          </html>
+      `
+      });
+      return response.sendStatus(204);
+    }
+
+    return response.status(500).json({ error: 'Unable to reset your password, contact the administrator' });
   }
 
   async delete(request: express.Request, response: express.Response) {
