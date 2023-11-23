@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { ActionButton, ButtonsContainer, CustomInputContainer, FormContainer, Gift } from './styles'
 import { TGift } from '../../pages/GiftList';
 import IconeDinamico from '../IconeDinamico';
 import { toast } from 'react-toastify';
+import api from '../../service/api';
+import Context, { IContext } from '../../context/Context';
 
 interface IGiftCardProps {
   gift: TGift;
@@ -19,9 +21,10 @@ export default function GiftCard({
   setSelectedModalItem,
   deleteGift
 }: IGiftCardProps) {
+  const { handleOverlayActive }: IContext = useContext(Context);
   const [inputsValues, setInputsValues] = useState<TGift | undefined>();
 
-  function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (!inputsValues?.requested_amount || inputsValues?.requested_amount < 1) {
@@ -30,7 +33,15 @@ export default function GiftCard({
     }
 
     const newItem = [{ ...inputsValues, ...gift }];
+    delete newItem[0].id;
+    delete newItem[0].created_at;
 
+    const response = await postGift(newItem[0]);
+    // console.log(newItem[0]);
+
+    if (!response) {
+      return;
+    }
 
     setSelectedGiftsMock((prev: any) => {
       const alreadyExist = prev.filter((prev: any) => prev.id === gift.id);
@@ -44,11 +55,31 @@ export default function GiftCard({
         });
       }
 
-      return [...prev.filter((selectedGift: any) => JSON.stringify(selectedGift) !== JSON.stringify({ id: 9999999, name: '', image_uri: '', requested_amount: 0, confirmed_amount: 0 })), ...newItem];
+      return [...prev.filter((selectedGift: any) => JSON.stringify(selectedGift) !== JSON.stringify({ id: '9999999', name: '', image_uri: '', requested_amount: 0, confirmed_amount: 0 })), ...newItem];
     });
 
     toast.success(`${gift.name} foi adicionado a lista 😁`);
     setInputsValues(undefined);
+
+  }
+
+  async function postGift(gift: any) {
+    try {
+      handleOverlayActive(true);
+      const response = await api.post('/gifts', gift);
+
+      if (response.status === 201) {
+        return response.data;
+      }
+    } catch (error: any) {
+      if (error.response.data?.error) {
+        toast.error('Não foi possível adicionar presente. ' + error.response.data?.error);
+        return;
+      }
+      toast.error('Não foi possível adicionar presente. ' + error.message);
+    } finally {
+      handleOverlayActive(false);
+    }
   }
 
   return (
@@ -83,7 +114,7 @@ export default function GiftCard({
             </ActionButton>
           </>
           :
-          <FormContainer onSubmit={(e: React.FormEvent<HTMLFormElement>) => handleFormSubmit(e)}>
+          <FormContainer onSubmit={handleFormSubmit}>
             <CustomInputContainer>
               <label>Quantidade</label>
               <input

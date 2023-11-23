@@ -26,6 +26,7 @@ type TGiftBase = {
   id?: string;
   name: string;
   image_uri: string;
+  created_at?: string;
 };
 
 type TGiftElectrical = TGiftBase & {
@@ -92,7 +93,6 @@ export default function GiftList() {
       }
 
       handleOverlayActive(true);
-
 
       if (editing) {
         setSelectedGiftsMock(prev => prev.map((giftMock: any) => {
@@ -214,7 +214,7 @@ export default function GiftList() {
       });
 
       if (response.status === 200) {
-        setExamplesGifts(response.data);
+        setExamplesGifts(response.data.map((gift: TGift[]) => ({ ...gift, ...{ gift_list_id: routeParams.id }})));
       }
     } catch (error: any) {
       toast.error('Não foi possível obter exemplos de presentes para sua lista. ' + error.message);
@@ -240,6 +240,7 @@ export default function GiftList() {
   async function deleteGift(id: string) {
     try {
       if (confirm('Deseja realmente excluir?')) {
+        handleOverlayActive(true);
         const response = await api.delete(`/gifts/${id}`);
 
         if (response.status === 204) {
@@ -252,6 +253,8 @@ export default function GiftList() {
       }
     } catch (error: any) {
       toast.error('Não foi possível excluir presente. ' + error.message);
+    } finally {
+      handleOverlayActive(false);
     }
   }
 
