@@ -8,7 +8,7 @@ import { router } from './routes';
 
 dotenv.config();
 
-const allowedOrigins = ['https://meuspresentes.vercel.app', 'https://meuspresentes.com.br'];
+const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.replaceAll(' ', '').split(',') : [];
 
 //Create app
 export const app = express();
