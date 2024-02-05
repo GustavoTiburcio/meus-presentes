@@ -59,7 +59,7 @@ export default function GiftList() {
   const isMobile = width <= 767;
 
   const [selectedTab, setSelectedTab] = useState<number>(1);
-  const [selectedGiftsMock, setSelectedGiftsMock] = useState<TGift[]>([]);
+  const [selectedGifts, setSelectedGifts] = useState<TGift[]>([]);
   const [examplesGifts, setExamplesGifts] = useState<TGift[]>([]);
   const [giftList, setGiftList] = useState<IGiftList>();
   const [, setRefresh] = useState<boolean>(true);
@@ -95,24 +95,37 @@ export default function GiftList() {
       handleOverlayActive(true);
 
       if (editing) {
-        setSelectedGiftsMock(prev => prev.map((giftMock: any) => {
-          if (giftMock.id === selectedModalItem?.id) {
-            return {
-              id: giftMock.id,
-              name: modalNameInputRef.current?.value,
-              image_uri: giftMock.image_uri,
-              requested_amount: modalRequestedAmountInputRef.current?.value ? +modalRequestedAmountInputRef.current.value : 1,
-              color: modalColorInputRef.current?.value,
-              observation: modalObservationInputRef.current?.value,
-              ...(giftMock?.electrical && { electrical: giftMock.electrical, voltage: modalVoltageInputRef.current?.value ?? '' })
-            }
+        if (!selectedModalItem?.id) {
+          toast.error('Ocorreu um erro ao editar o presente. Não foi possível encontrar o id do presente');
+          return;
+        }
+
+        const editedItem: TGift = {
+          id: selectedModalItem.id,
+          name: modalNameInputRef.current?.value,
+          image_uri: selectedModalItem?.image_uri,
+          requested_amount: modalRequestedAmountInputRef.current?.value ? +modalRequestedAmountInputRef.current.value : 1,
+          color: modalColorInputRef.current?.value,
+          observation: modalObservationInputRef.current?.value,
+          ...(selectedModalItem?.electrical && { electrical: true, voltage: modalVoltageInputRef.current?.value ?? '' })
+        }
+
+        if (modalImageInputRef.current?.files) {
+          const imageShackUri = await handleFileUpload(modalImageInputRef.current.files[0]);
+
+          if (imageShackUri) {
+            editedItem.image_uri = 'https://' + imageShackUri;
           }
+        }
 
-          return giftMock;
-        }));
+        const response = await putGift(editedItem);
 
-        toast.success('Presente foi atualizado ✔');
-        setModalVisible(false);
+        if (response) {
+          getGiftList();
+
+          toast.success('Presente foi atualizado ✔');
+          setModalVisible(false);
+        }
 
         return;
       }
@@ -152,7 +165,7 @@ export default function GiftList() {
       const response = await postGift(newItem[0]);
 
       if (response) {
-        setSelectedGiftsMock((prev: any) => {
+        setSelectedGifts((prev: any) => {
           return [...prev.filter((selectedGift: any) => JSON.stringify(selectedGift) !== JSON.stringify({ id: '9999999', name: '', image_uri: '', requested_amount: 0, confirmed_amount: 0 })), ...newItem];
         });
         toast.success(`${newItem[0].name} foi adicionado a sua lista 😁`);
@@ -177,7 +190,7 @@ export default function GiftList() {
       });
 
       if (response.status === 200) {
-        setSelectedGiftsMock(response.data);
+        setSelectedGifts(response.data);
       }
     } catch (error: any) {
       toast.error('Não foi possível obter presentes da sua lista. ' + error.message);
@@ -237,6 +250,22 @@ export default function GiftList() {
     }
   }
 
+  async function putGift(gift: TGift) {
+    try {
+      const response = await api.put(`/gifts/${gift.id}`, gift);
+
+      if (response.status === 200) {
+        return response.data;
+      }
+    } catch (error: any) {
+      if (error.response.data?.error) {
+        toast.error('Não foi possível editar presente. ' + error.response.data?.error);
+        return;
+      }
+      toast.error('Não foi possível editar presente. ' + error.message);
+    }
+  }
+
   async function deleteGift(id: string) {
     try {
       if (confirm('Deseja realmente excluir?')) {
@@ -244,7 +273,7 @@ export default function GiftList() {
         const response = await api.delete(`/gifts/${id}`);
 
         if (response.status === 204) {
-          setSelectedGiftsMock((prev: any) => prev.filter((selectedGift: any) =>
+          setSelectedGifts((prev: any) => prev.filter((selectedGift: any) =>
             JSON.stringify(selectedGift) !== JSON.stringify({ id: '9999999', name: '', image_uri: '', requested_amount: 0, confirmed_amount: 0 }) &&
             (selectedGift.id !== id)
           ));
@@ -401,18 +430,18 @@ export default function GiftList() {
   }
 
   useEffect(() => {
-    if (selectedGiftsMock.length % 4 !== 0) {
-      const miss = 4 - (selectedGiftsMock.length % 4);
+    if (selectedGifts.length % 4 !== 0) {
+      const miss = 4 - (selectedGifts.length % 4);
 
       for (let index = 0; index < miss; index++) {
-        selectedGiftsMock.push({ id: '9999999', name: '', image_uri: '', requested_amount: 0, confirmed_amount: 0 });
+        selectedGifts.push({ id: '9999999', name: '', image_uri: '', requested_amount: 0, confirmed_amount: 0 });
       }
       setRefresh(prev => !prev);
     }
 
     // console.log(selectedGiftsMock);
 
-  }, [selectedGiftsMock]);
+  }, [selectedGifts]);
 
   useEffect(() => {
     if (examplesGifts.length % 4 !== 0) {
@@ -452,12 +481,12 @@ export default function GiftList() {
         </Tab>
       </TabsContainer>
       <GiftsContainer>
-        {selectedTab === 1 ? selectedGiftsMock.length > 0 ?
-          selectedGiftsMock.map((gift, index) => (
+        {selectedTab === 1 ? selectedGifts.length > 0 ?
+          selectedGifts.map((gift, index) => (
             <GiftCard
               gift={gift}
               key={index}
-              setSelectedGiftsMock={setSelectedGiftsMock}
+              setSelectedGiftsMock={setSelectedGifts}
               setModalVisible={setModalVisible}
               setSelectedModalItem={setSelectedModalItem}
               deleteGift={deleteGift}
@@ -484,7 +513,7 @@ export default function GiftList() {
                 <GiftCard
                   gift={gift}
                   key={index}
-                  setSelectedGiftsMock={setSelectedGiftsMock}
+                  setSelectedGiftsMock={setSelectedGifts}
                   setModalVisible={setModalVisible}
                   setSelectedModalItem={setSelectedModalItem}
                   deleteGift={deleteGift}
