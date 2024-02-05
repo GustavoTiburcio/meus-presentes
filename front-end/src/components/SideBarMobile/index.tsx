@@ -1,10 +1,22 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { CloseIconDiv, Container } from './styles';
 // import { useNavigate } from 'react-router-dom';
 import * as FaIcons from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import Context, { IContext } from '../../context/Context';
+
+interface IMenuOptions {
+  option: string;
+  suboptions: {
+    subOption: string;
+    redirect: () => void;
+  }[];
+  redirect: () => void;
+}
 
 export default function SideBarMobile() {
-  // const navigate = useNavigate();
+  const { loginData }: IContext = useContext(Context);
+  const navigate = useNavigate();
 
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -12,30 +24,59 @@ export default function SideBarMobile() {
   const handleToggle = () => setIsOpen(!isOpen);
   const handleItemClick = (index: number) => setActiveIndex(activeIndex === index ? null : index);
 
-  const itensMenu = [
+  const MenuOptions: IMenuOptions[] = [
     {
-      cod: '1',
-      itemen: 'Loteamentos',
-      subitemen: [
-        {
-          codsubitemen: '1',
-          subitemen: 'Jardim Dias I'
-        },
-        {
-          codsubitemen: '2',
-          subitemen: 'Jardim Dias II'
-        },
-        {
-          codsubitemen: '3',
-          subitemen: 'Jardim Tóquio'
-        },
-        {
-          codsubitemen: '4',
-          subitemen: 'Paranavaí'
-        },
-      ],
+      option: 'Início',
+      suboptions: [],
+      redirect: () => navigate('/')
+    },
+    {
+      option: 'Como Funciona?',
+      suboptions: [],
+      redirect: () => navigate('/')
+    },
+    {
+      option: 'Contato',
+      suboptions: [],
+      redirect: () => navigate('/')
+    },
+    {
+      option: 'Indique',
+      suboptions: [],
+      redirect: () => navigate('/')
+    },
+    {
+      option: 'Acessar Conta',
+      suboptions: [],
+      redirect: () => handleLoginButtonClick()
     }
-  ]
+    // {
+    //   option: 'Funcionalidades',
+    //   suboptions: [
+    //     {
+    //       subOption: 'Lista 1',
+    //         redirect: () => navigate('/')
+    //     },
+    //     {
+    //       subOption: 'Lista 2',
+    //          redirect: () => navigate('/')
+    //     },
+    //     {
+    //       subOption: 'Lista 3',
+    //          redirect: () => navigate('/')
+    //     }
+    //   ]
+    // }
+  ];
+
+  function handleLoginButtonClick() {
+    if (loginData.name && loginData.email) {
+      navigate('/painelDeUsuario/inicio');
+      return;
+    }
+
+    navigate('/login');
+  }
 
   return (
     <Container>
@@ -47,51 +88,41 @@ export default function SideBarMobile() {
           <FaIcons.FaWindowClose size={25} />
         </CloseIconDiv>
         <ul>
-          <li onClick={() => handleItemClick(9999)} className={activeIndex === 9999 ? 'active' : ''}>
-            <b>Início</b>
-          </li>
-          <li onClick={() => handleItemClick(9999)} className={activeIndex === 9999 ? 'active' : ''}>
-            <b>Quem somos</b>
-          </li>
-
-          {itensMenu.map((itemMenu: any, index) => (
+          {MenuOptions.map((option: any, index: number) => (
             <li
               key={index}
               className={activeIndex === index ? 'active' : ''}
               onClick={() => {
-                if (itemMenu.itemen.length === 0) {
-                  handleToggle();
+                // if (option.itemen.length === 0) {
+                //   handleToggle();
+                //   return;
+                // }
+
+                if (option.suboptions.length > 0) {
+                  handleItemClick(index);
                   return;
                 }
-                handleItemClick(index);
+
+                option.redirect();
               }}
             >
-              <b>{itemMenu.itemen}</b>
-              {itemMenu.subitemen && activeIndex === index && (
+              <b>{option.option}</b>
+              {option.suboptions && activeIndex === index && (
                 <ul>
-                  {itemMenu.subitemen.map((subitemen: any, index: any) => (
+                  {option.suboptions.map((subOption: any, index: number) => (
                     <li
                       key={index}
                       onClick={() => {
                         handleToggle();
                       }}
                     >
-                      - {subitemen.subitemen}
+                      - {subOption.subOption}
                     </li>
                   ))}
                 </ul>
               )}
             </li>
           ))}
-          <li onClick={() => handleItemClick(9999)} className={activeIndex === 9999 ? 'active' : ''}>
-            <b>Lançamentos</b>
-          </li>
-          <li onClick={() => handleItemClick(9999)} className={activeIndex === 9999 ? 'active' : ''}>
-            <b>Contato</b>
-          </li>
-          <li onClick={() => handleItemClick(9999)} className={activeIndex === 9999 ? 'active' : ''}>
-            <b>Área do Cliente</b>
-          </li>
         </ul>
       </nav>
     </Container>
