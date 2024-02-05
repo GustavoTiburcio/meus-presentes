@@ -39,6 +39,11 @@ export const Gift = styled.div<IGiftProps>`
   b{
     margin-top: 1rem;
   }
+
+  @media screen and (max-width: 767px) {
+    width: 80%;
+    align-self:center;
+  }
 `;
 
 export const ButtonsContainer = styled.div`
@@ -74,6 +79,13 @@ export const CustomInputContainer = styled(InputContainer)`
   input, select {
     padding: 0.3rem;
   }
+
+  @media screen and (max-width: 767px) {
+    input {
+      width: 100%;
+    }
+  }
+
 `;
 
 export const FormContainer = styled.form`

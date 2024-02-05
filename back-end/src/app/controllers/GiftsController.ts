@@ -1,20 +1,21 @@
 import express from 'express';
-import GiftModelsRepository from '../repositories/GiftModelsRepository';
+import GiftsRepository from '../repositories/GiftsRepository';
 import { isValidUUIDv4 } from '../../utils';
+import GiftListRepository from '../repositories/GiftListRepository';
 
 class GiftModelsController {
   async index(request: express.Request, response: express.Response) {
     // List all rows
     const orderBy = request.query?.orderBy;
-    const listTypeId = request.query?.listTypeId;
+    const giftListId = request.query?.giftListId;
 
-    if (listTypeId && !isValidUUIDv4(listTypeId.toString())) {
+    if (giftListId && !isValidUUIDv4(giftListId.toString())) {
       return response.status(400).json({ error: 'Invalid UUID string' });
     }
 
-    const giftModels = await GiftModelsRepository.findAll(listTypeId?.toString(), orderBy?.toString());
+    const gifts = await GiftsRepository.findAll(giftListId?.toString(), orderBy?.toString());
 
-    response.json(giftModels);
+    response.json(gifts);
   }
 
   async show(request: express.Request, response: express.Response) {
@@ -25,48 +26,66 @@ class GiftModelsController {
       return response.status(400).json({ error: 'Invalid UUID string' });
     }
 
-    const giftModel = await GiftModelsRepository.findById(id);
+    const gift = await GiftsRepository.findById(id);
 
-    if (!giftModel) {
+    if (!gift) {
       //404: Not found
-      return response.status(404).json({ error: 'Gift model not found' });
+      return response.status(404).json({ error: 'Gift not found' });
     }
 
-    response.json(giftModel);
+    response.json(gift);
   }
 
   async store(request: express.Request, response: express.Response) {
     //Create new row;
     const {
       name,
-      list_type_id,
       image_uri,
       electrical,
-      voltage
+      voltage,
+      requested_amount,
+      color,
+      observation,
+      gift_list_id,
     } = request.body;
 
     if (!name) {
       return response.status(400).json({ error: 'Name is required' });
     }
-    if (!list_type_id) {
-      return response.status(400).json({ error: 'list_type_id is required' });
+    if (!gift_list_id) {
+      return response.status(400).json({ error: 'gift_list_id is required' });
     }
-    if (!isValidUUIDv4(list_type_id)) {
+    if (!isValidUUIDv4(gift_list_id)) {
       return response.status(400).json({ error: 'Invalid UUID string' });
     }
     if (electrical && !voltage) {
       return response.status(400).json({ error: 'property voltage is required when electrical is true' });
     }
+    if (!requested_amount) {
+      return response.status(400).json({ error: 'property requestedAmount is required' });
+    }
+    if (requested_amount <= 0) {
+      return response.status(400).json({ error: 'property requestedAmount must be greater than 0' });
+    }
 
-    const giftModel = await GiftModelsRepository.create({
+    const giftListExists = await GiftListRepository.findById(gift_list_id);
+
+    if (!giftListExists) {
+      return response.status(404).json({ error: 'Gift list not found.' });
+    }
+
+    const gift = await GiftsRepository.create({
       name,
-      list_type_id,
       image_uri,
       electrical,
       voltage,
+      requested_amount,
+      color,
+      observation,
+      gift_list_id,
     });
 
-    response.status(201).json(giftModel);
+    response.status(201).json(gift);
   }
 
   async update(request: express.Request, response: express.Response) {
@@ -79,36 +98,40 @@ class GiftModelsController {
 
     const {
       name,
-      list_type_id,
       image_uri,
       electrical,
-      voltage
+      voltage,
+      requested_amount,
+      color,
+      observation,
     } = request.body;
 
-    const giftModelExists = await GiftModelsRepository.findById(id);
+    const giftExists = await GiftsRepository.findById(id);
 
-    if (!giftModelExists) {
-      return response.status(404).json({ error: 'Gift model not found.' });
+    if (!giftExists) {
+      return response.status(404).json({ error: 'Gift not found.' });
     }
     if (!name) {
       return response.status(400).json({ error: 'Name is required.' });
     }
-    if (!list_type_id) {
-      return response.status(400).json({ error: 'list_type_id is required' });
-    }
-    if (!isValidUUIDv4(list_type_id)) {
-      return response.status(400).json({ error: 'Invalid UUID string' });
-    }
     if (electrical && !voltage) {
       return response.status(400).json({ error: 'property voltage is required when electrical is true' });
     }
+    if (!requested_amount) {
+      return response.status(400).json({ error: 'property requestedAmount is required' });
+    }
+    if (requested_amount <= 0) {
+      return response.status(400).json({ error: 'property requestedAmount must be greater than 0' });
+    }
 
-    const giftModel = await GiftModelsRepository.update(id, {
+    const giftModel = await GiftsRepository.update(id, {
       name,
-      list_type_id,
       image_uri,
       electrical,
-      voltage
+      voltage,
+      requested_amount,
+      color,
+      observation,
     });
 
     response.json(giftModel);
@@ -122,7 +145,7 @@ class GiftModelsController {
       return response.status(400).json({ error: 'Invalid UUID string' });
     }
 
-    await GiftModelsRepository.delete(id);
+    await GiftsRepository.delete(id);
 
     // 204: No Content
     response.sendStatus(204);

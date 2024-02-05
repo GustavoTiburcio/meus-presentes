@@ -6,8 +6,9 @@ require('express-async-errors');
 
 import { router } from './routes';
 
-const allowedOrigins = ['https://meuspresentes.vercel.app', 'https://meuspresentes.com.br'];
 dotenv.config();
+
+const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.replaceAll(' ', '').split(',') : [];
 
 //Create app
 export const app = express();
@@ -26,17 +27,30 @@ app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
     if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not ' +
-        'allow access from the specified Origin.';
-      return callback(new Error(msg), false);
+      return callback(new Error('The CORS policy for this site does not allow access from the specified Origin.'), false);
     }
     return callback(null, true);
   }
 }));
 
-app.use(cors());
+// Middleware for CORS errors
+app.use((error: any, req: any, res: any, next: any) => {
+  if (error instanceof Error) {
+    if (error.message === 'The CORS policy for this site does not allow access from the specified Origin.') {
+      res.status(403).json({ error: 'Forbidden access from unauthorized sources.' });
+    } else {
+      next(error);
+    }
+  } else {
+    // Other errors
+    next(error);
+  }
+});
+
+//Logger
 app.use(logger('dev'));
 
+//Global Error handling
 app.use((error: string, request: any, response: any, next: any) => {
   console.log(error);
   response.sendStatus(500);

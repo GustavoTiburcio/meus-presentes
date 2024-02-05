@@ -17,6 +17,10 @@ export const Image = styled.img`
   width: 10%;
   animation: 3s ${flashAnimation};
   animation-iteration-count: infinite;
+
+  @media screen and (max-width: 767px) {
+    width: 30%;
+  }
 `;
 
 export const LoaderDefault = styled.span`

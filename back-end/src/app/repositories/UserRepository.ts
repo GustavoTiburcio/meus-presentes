@@ -42,6 +42,15 @@ class UserRepository {
     return row;
   }
 
+  async passwordUpdate(id: string, newPassword: string) {
+    const [row] = await query(`
+      UPDATE users
+      SET password = $1
+      WHERE id = $2 RETURNING *
+    `, [newPassword, id]);
+    return row;
+  }
+
   async delete(id: string) {
     const deleteOp = await query('DELETE FROM users WHERE id = $1', [id]);
     return deleteOp;

@@ -64,7 +64,7 @@ export default function Header() {
 
   return (
     <Container
-      $hoverHeaderActive={isMobile}
+      $hoverHeaderActive={false}
     >
       <PesquisaModal />
       <Subcontainer>
@@ -96,20 +96,17 @@ export default function Header() {
               <button
                 className='dropbtn'
               >
-                Loteamentos
+                Funcionalidades
               </button>
               <div className='dropdown-content'>
                 <a>
-                  Jardim Dias I
+                  Lista 1
                 </a>
                 <a>
-                  Jardim Dias II
+                  Lista 2
                 </a>
                 <a>
-                  Jardim Tóquio
-                </a>
-                <a>
-                  Paranavaí
+                  Lista 3
                 </a>
               </div>
             </div> */}

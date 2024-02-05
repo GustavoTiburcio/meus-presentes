@@ -6,6 +6,12 @@ export const Container = styled.main`
   width: 100%;
   margin: 1rem 0rem;
   align-items: center;
+  @media screen and (max-width: 767px) {
+    p {
+      text-align: justify;
+      width: 90%;
+    }
+  }
 `;
 
 export const FormContainer = styled.form`
@@ -28,6 +34,10 @@ export const FormContainer = styled.form`
   select, input, textarea {
     padding: 0.5rem;
   }
+
+  @media screen and (max-width: 767px) {
+    width: 90%;
+  }
 `;
 
 export const InputWrapper = styled.div`
@@ -38,6 +48,14 @@ export const InputWrapper = styled.div`
 
   div {
     width: 49%;
+  }
+
+  @media screen and (max-width: 767px) {
+    flex-direction: column;
+
+    div {
+    width: 100%;
+  }
   }
 `;
 

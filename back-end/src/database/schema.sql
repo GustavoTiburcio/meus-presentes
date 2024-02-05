@@ -60,3 +60,29 @@ CREATE TABLE IF NOT EXISTS gift_models(
   PRIMARY KEY (id),
   FOREIGN KEY(list_type_id) REFERENCES list_types(id)
 );
+
+insert into
+  gift_models(name, list_type_id, image_uri, electrical, voltage)
+values
+  ('Aspirador', 'd72e12e1-db19-414c-87da-4cdaec07f6ad', 'https://imagizer.imageshack.com/img922/9062/bCmPx3.png', true, '220V'),
+  ('Chaleira', 'd72e12e1-db19-414c-87da-4cdaec07f6ad', 'https://imagizer.imageshack.com/img922/5365/nq2aHi.jpg', true, '110V'),
+  ('Almofada', 'd72e12e1-db19-414c-87da-4cdaec07f6ad', 'https://imagizer.imageshack.com/img923/6623/A2tjsI.png', false, ''),
+  ('Mesa de centro', 'd72e12e1-db19-414c-87da-4cdaec07f6ad', 'https://imagizer.imageshack.com/img922/3788/TfsJLO.png', false, ''),
+  ('Liquidificador Oster', 'd72e12e1-db19-414c-87da-4cdaec07f6ad', 'https://imagizer.imageshack.com/img922/9351/hbukn8.png', false, '110V'),
+  ('Aparelho de Jantar', 'd72e12e1-db19-414c-87da-4cdaec07f6ad', 'https://imagizer.imageshack.com/img924/8523/Pxdwe7.png', false, '');
+
+CREATE TABLE IF NOT EXISTS gifts(
+  id UUID NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+  name VARCHAR NOT NULL,
+  image_uri VARCHAR,
+  electrical BOOLEAN,
+  voltage VARCHAR,
+  requested_amount INTEGER,
+  confirmed_amount INTEGER,
+  color VARCHAR,
+  observation VARCHAR,
+  gift_list_id UUID,
+  created_at TIMESTAMP DEFAULT now(),
+  PRIMARY KEY (id),
+  FOREIGN KEY(gift_list_id) REFERENCES gift_lists(id)
+);

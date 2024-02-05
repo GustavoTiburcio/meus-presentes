@@ -36,6 +36,10 @@ export const Description = styled.p`
   width: 80%;
   text-align: justify;
   text-indent: 3rem;
+
+  @media screen and (max-width: 767px) {
+    width: 100%;
+  }
 `;
 
 export const Button = styled.button`
@@ -47,4 +51,8 @@ export const Button = styled.button`
   min-width: 8rem;
   font-weight: bold;
   margin: 2rem 0px;
+
+   @media screen and (max-width: 767px) {
+    margin: 2rem 0px 2.5rem 0px;
+  }
 `;

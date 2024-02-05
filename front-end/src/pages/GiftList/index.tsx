@@ -23,23 +23,30 @@ import Context, { IContext } from '../../context/Context';
 import { IGiftList } from '../UserPanel';
 
 type TGiftBase = {
-  id: number;
+  id?: string;
   name: string;
   image_uri: string;
-  requestedAmount?: number;
-  confirmedAmount?: number;
-  color?: string;
-  observation?: string;
+  created_at?: string;
 };
 
 type TGiftElectrical = TGiftBase & {
   electrical: true;
-  voltage: '220v' | '110v' | '24v' | '12v' | '';
+  voltage: string;
+  requested_amount?: number;
+  confirmed_amount?: number;
+  color?: string;
+  observation?: string;
+  gift_list_id?: string;
 };
 
 type TGiftNonElectrical = TGiftBase & {
   electrical?: false;
   voltage?: never;
+  requested_amount?: number;
+  confirmed_amount?: number;
+  color?: string;
+  observation?: string;
+  gift_list_id?: string;
 };
 
 export type TGift = TGiftElectrical | TGiftNonElectrical;
@@ -52,7 +59,7 @@ export default function GiftList() {
   const isMobile = width <= 767;
 
   const [selectedTab, setSelectedTab] = useState<number>(1);
-  const [selectedGiftsMock, setSelectedGiftsMock] = useState<TGift[]>([]);
+  const [selectedGifts, setSelectedGifts] = useState<TGift[]>([]);
   const [examplesGifts, setExamplesGifts] = useState<TGift[]>([]);
   const [giftList, setGiftList] = useState<IGiftList>();
   const [, setRefresh] = useState<boolean>(true);
@@ -67,52 +74,85 @@ export default function GiftList() {
   const modalObservationInputRef = useRef<HTMLInputElement | null>(null);
   const modalImageInputRef = useRef<HTMLInputElement | null>(null);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>, editando: boolean) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>, editing: boolean) {
     try {
       e.preventDefault();
-      handleOverlayActive(true);
-
-      if (!modalRequestedAmountInputRef.current?.value) {
+      if (!modalRequestedAmountInputRef.current?.value || +modalRequestedAmountInputRef.current?.value < 1) {
         toast.warning('Verifique a quantidade informada.');
         return;
       }
 
       if (!modalNameInputRef.current?.value) {
-        toast.warning('Verifique o nome do presente.');
+        toast.warning('Informe o nome do presente.');
         return;
       }
 
-      if (editando) {
-        setSelectedGiftsMock(prev => prev.map((giftMock: any) => {
-          if (giftMock.id === selectedModalItem?.id) {
-            return {
-              id: giftMock.id,
-              name: modalNameInputRef.current?.value,
-              image_uri: giftMock.image_uri,
-              requestedAmount: modalRequestedAmountInputRef.current?.value,
-              color: modalColorInputRef.current?.value,
-              observation: modalObservationInputRef.current?.value,
-              ...(giftMock?.electrical && { electrical: giftMock.electrical, voltage: modalVoltageInputRef.current?.value ?? '' })
-            }
+      if (selectElectricalInputValue === 'Sim' && !modalVoltageInputRef.current?.value) {
+        toast.warning('Informe a voltagem do presente.');
+        return;
+      }
+
+      handleOverlayActive(true);
+
+      if (editing) {
+        if (!selectedModalItem?.id) {
+          toast.error('Ocorreu um erro ao editar o presente. Não foi possível encontrar o id do presente');
+          return;
+        }
+
+        const editedItem: any = {
+          id: selectedModalItem.id,
+          name: modalNameInputRef.current?.value,
+          image_uri: selectedModalItem?.image_uri,
+          requested_amount: modalRequestedAmountInputRef.current?.value ? +modalRequestedAmountInputRef.current.value : 1,
+          color: modalColorInputRef.current?.value,
+          observation: modalObservationInputRef.current?.value,
+          ...(selectedModalItem?.electrical && { electrical: true, voltage: modalVoltageInputRef.current?.value ?? '' })
+        }
+
+        if (modalImageInputRef.current?.files) {
+          const imageShackUri = await handleFileUpload(modalImageInputRef.current.files[0]);
+
+          if (imageShackUri) {
+            editedItem.image_uri = 'https://' + imageShackUri;
           }
+        }
 
-          return giftMock;
-        }));
+        const response = await putGift(editedItem);
 
-        toast.success('Presente foi atualizado ✔');
+        if (response) {
+          getGiftList();
+
+          toast.success('Presente foi atualizado ✔');
+          setModalVisible(false);
+        }
 
         return;
       }
 
-      const newItem = [{
-        id: 8,
-        name: modalNameInputRef.current?.value,
-        image_uri: 'https://louisville.edu/research/handaresearchlab/pi-and-students/photos/nocamera.png/image',
-        requestedAmount: modalRequestedAmountInputRef.current?.value,
-        color: modalColorInputRef.current?.value,
-        observation: modalObservationInputRef.current?.value,
-        ...(selectElectricalInputValue === 'Sim' && { electrical: true, voltage: modalVoltageInputRef.current?.value ?? '' })
-      }];
+      const newItem: TGift[] = [];
+
+      if (selectElectricalInputValue === 'Sim') {
+        newItem.push({
+          electrical: true,
+          voltage: modalVoltageInputRef.current?.value ?? '',
+          name: modalNameInputRef.current?.value,
+          image_uri: 'https://imagizer.imageshack.com/img923/3689/mkw7ux.png',
+          requested_amount: +modalRequestedAmountInputRef.current?.value ?? 1,
+          color: modalColorInputRef.current?.value,
+          observation: modalObservationInputRef.current?.value,
+          gift_list_id: routeParams.id,
+        });
+      } else {
+        newItem.push({
+          name: modalNameInputRef.current?.value,
+          image_uri: 'https://imagizer.imageshack.com/img923/3689/mkw7ux.png',
+          requested_amount: +modalRequestedAmountInputRef.current?.value ?? 1,
+          color: modalColorInputRef.current?.value,
+          observation: modalObservationInputRef.current?.value,
+          gift_list_id: routeParams.id,
+        });
+      }
 
       if (modalImageInputRef.current?.files) {
         const imageShackUri = await handleFileUpload(modalImageInputRef.current.files[0]);
@@ -122,21 +162,40 @@ export default function GiftList() {
         }
       }
 
-      console.log(newItem);
-      setSelectedGiftsMock((prev: any) => {
-        return [...prev.filter((selectedGift: any) => JSON.stringify(selectedGift) !== JSON.stringify({ id: 9999999, name: '', image_uri: '', requestedAmount: 0, confirmedAmount: 0 })), ...newItem];
-      });
+      const response = await postGift(newItem[0]);
 
-      toast.success(`${modalNameInputRef.current?.value} foi adicionado a lista 😁`);
+      if (response) {
+        setSelectedGifts((prev: any) => {
+          return [...prev.filter((selectedGift: any) => JSON.stringify(selectedGift) !== JSON.stringify({ id: '9999999', name: '', image_uri: '', requested_amount: 0, confirmed_amount: 0 })), ...newItem];
+        });
+        toast.success(`${newItem[0].name} foi adicionado a sua lista 😁`);
+        setModalVisible(false);
+        return;
+      }
 
-      return;
     } catch (error: any) {
       toast.error(error.message);
     } finally {
-      setModalVisible(false);
       setSelectedModalItem(undefined);
       handleOverlayActive(false);
     }
+  }
+
+  async function getGifts(id: string) {
+    try {
+      const response = await api.get('/gifts', {
+        params: {
+          giftListId: id
+        }
+      });
+
+      if (response.status === 200) {
+        setSelectedGifts(response.data);
+      }
+    } catch (error: any) {
+      toast.error('Não foi possível obter presentes da sua lista. ' + error.message);
+    }
+
   }
 
   async function getGiftList() {
@@ -148,11 +207,12 @@ export default function GiftList() {
       if (response.status === 200) {
         setGiftList(response.data);
 
+        getGifts(response.data.id);
         getGiftModels(response.data.list_type_id);
       }
 
     } catch (error: any) {
-      toast.error('Falha ao obter lista de presente. ' + error.message);
+      toast.error('Falha ao obter informações da sua lista de presente. ' + error.message);
     } finally {
       handleOverlayActive(false);
     }
@@ -167,10 +227,63 @@ export default function GiftList() {
       });
 
       if (response.status === 200) {
-        setExamplesGifts(response.data);
+        setExamplesGifts(response.data.map((gift: TGift[]) => ({ ...gift, ...{ gift_list_id: routeParams.id } })));
       }
     } catch (error: any) {
-      toast.error('Não foi possível obter exemplos de presente. ' + error.message);
+      toast.error('Não foi possível obter exemplos de presentes para sua lista. ' + error.message);
+    }
+  }
+
+  async function postGift(gift: TGift) {
+    try {
+      const response = await api.post('/gifts', gift);
+
+      if (response.status === 201) {
+        return response.data;
+      }
+    } catch (error: any) {
+      if (error.response.data?.error) {
+        toast.error('Não foi possível adicionar presente. ' + error.response.data?.error);
+        return;
+      }
+      toast.error('Não foi possível adicionar presente. ' + error.message);
+    }
+  }
+
+  async function putGift(gift: TGift) {
+    try {
+      const response = await api.put(`/gifts/${gift.id}`, gift);
+
+      if (response.status === 200) {
+        return response.data;
+      }
+    } catch (error: any) {
+      if (error.response.data?.error) {
+        toast.error('Não foi possível editar presente. ' + error.response.data?.error);
+        return;
+      }
+      toast.error('Não foi possível editar presente. ' + error.message);
+    }
+  }
+
+  async function deleteGift(id: string) {
+    try {
+      if (confirm('Deseja realmente excluir?')) {
+        handleOverlayActive(true);
+        const response = await api.delete(`/gifts/${id}`);
+
+        if (response.status === 204) {
+          setSelectedGifts((prev: any) => prev.filter((selectedGift: any) =>
+            JSON.stringify(selectedGift) !== JSON.stringify({ id: '9999999', name: '', image_uri: '', requested_amount: 0, confirmed_amount: 0 }) &&
+            (selectedGift.id !== id)
+          ));
+          toast.success('Presente excluído com sucesso!');
+        }
+      }
+    } catch (error: any) {
+      toast.error('Não foi possível excluir presente. ' + error.message);
+    } finally {
+      handleOverlayActive(false);
     }
   }
 
@@ -218,11 +331,12 @@ export default function GiftList() {
             },
             content: {
               display: 'flex',
-              height: '35rem',
-              width: isMobile ? '60%' : '30%',
+              height: isMobile ? width < 400 ? '30rem' : '35rem' : '35rem',
+              width: isMobile ? '85%' : '30%',
               // margin: 'auto',
               margin: 'auto',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              alignItems: 'center'
             },
           }}
         >
@@ -244,7 +358,7 @@ export default function GiftList() {
                   <label>Quantidade</label>
                   <input
                     placeholder='Quantidade desejada'
-                    defaultValue={selectedModalItem?.requestedAmount ?? ''}
+                    defaultValue={selectedModalItem?.requested_amount ?? ''}
                     ref={modalRequestedAmountInputRef}
                     type='number'
                   />
@@ -317,25 +431,25 @@ export default function GiftList() {
   }
 
   useEffect(() => {
-    if (selectedGiftsMock.length % 4 !== 0) {
-      const miss = 4 - (selectedGiftsMock.length % 4);
+    if (selectedGifts.length % 4 !== 0 && !isMobile) {
+      const miss = 4 - (selectedGifts.length % 4);
 
       for (let index = 0; index < miss; index++) {
-        selectedGiftsMock.push({ id: 9999999, name: '', image_uri: '', requestedAmount: 0, confirmedAmount: 0 });
+        selectedGifts.push({ id: '9999999', name: '', image_uri: '', requested_amount: 0, confirmed_amount: 0 });
       }
       setRefresh(prev => !prev);
     }
 
     // console.log(selectedGiftsMock);
 
-  }, [selectedGiftsMock]);
+  }, [selectedGifts]);
 
   useEffect(() => {
     if (examplesGifts.length % 4 !== 0) {
       const miss = 4 - (examplesGifts.length % 4);
 
       for (let index = 0; index < miss; index++) {
-        examplesGifts.push({ id: 9999999, name: '', image_uri: '', requestedAmount: 0, confirmedAmount: 0 });
+        examplesGifts.push({ id: '9999999', name: '', image_uri: '', requested_amount: 0, confirmed_amount: 0 });
       }
       setRefresh(prev => !prev);
     }
@@ -368,14 +482,15 @@ export default function GiftList() {
         </Tab>
       </TabsContainer>
       <GiftsContainer>
-        {selectedTab === 1 ? selectedGiftsMock.length > 0 ?
-          selectedGiftsMock.map((gift, index) => (
+        {selectedTab === 1 ? selectedGifts.length > 0 ?
+          selectedGifts.map((gift, index) => (
             <GiftCard
               gift={gift}
               key={index}
-              setSelectedGiftsMock={setSelectedGiftsMock}
+              setSelectedGiftsMock={setSelectedGifts}
               setModalVisible={setModalVisible}
               setSelectedModalItem={setSelectedModalItem}
+              deleteGift={deleteGift}
             />
           )) :
           (
@@ -399,9 +514,10 @@ export default function GiftList() {
                 <GiftCard
                   gift={gift}
                   key={index}
-                  setSelectedGiftsMock={setSelectedGiftsMock}
+                  setSelectedGiftsMock={setSelectedGifts}
                   setModalVisible={setModalVisible}
                   setSelectedModalItem={setSelectedModalItem}
+                  deleteGift={deleteGift}
                 />))}
             </GiftsTab2Container>
           </TabContainer>

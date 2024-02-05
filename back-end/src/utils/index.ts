@@ -21,16 +21,18 @@ export function isValidUUIDv4(uuid: string) {
 
 export function sendEmail(emailMessage: IEmailMessage) {
   const transporter = nodemailer.createTransport({
-    service: 'gmail',                              // the service used
+    host: 'smtp.zoho.com',
+    secure: true,
+    port: 465,
     auth: {
-      user: process.env.EMAIL_FROM,              // authentication details of sender, here the details are coming from .env file
+      user: process.env.EMAIL_FROM,
       pass: process.env.EMAIL_FROM_PASSWORD,
     },
   });
 
   const message = {
-    from: process.env.EMAIL_FROM,                         // sender email address
-    to: emailMessage.receiver,   // reciever email address
+    from: process.env.EMAIL_FROM,
+    to: emailMessage.receiver,
     subject: emailMessage.subject,
     html: emailMessage.body,
     // attachments: [
@@ -50,4 +52,18 @@ export function sendEmail(emailMessage: IEmailMessage) {
 
     console.log(info); 
   });
+}
+
+export function generateRandomPassword(): string {
+  const prefix = "res";
+  const length = 6; // 3 caracteres do prefixo + 6 caracteres aleatórios
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let password = prefix;
+
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    password += characters.charAt(randomIndex);
+  }
+
+  return password;
 }
