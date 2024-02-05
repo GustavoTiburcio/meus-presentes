@@ -100,7 +100,7 @@ export default function GiftList() {
           return;
         }
 
-        const editedItem: TGift = {
+        const editedItem: any = {
           id: selectedModalItem.id,
           name: modalNameInputRef.current?.value,
           image_uri: selectedModalItem?.image_uri,
