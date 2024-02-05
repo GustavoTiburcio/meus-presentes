@@ -331,11 +331,12 @@ export default function GiftList() {
             },
             content: {
               display: 'flex',
-              height: '35rem',
-              width: isMobile ? '60%' : '30%',
+              height: isMobile ? width < 400 ? '30rem' : '35rem' : '35rem',
+              width: isMobile ? '85%' : '30%',
               // margin: 'auto',
               margin: 'auto',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              alignItems: 'center'
             },
           }}
         >
@@ -430,7 +431,7 @@ export default function GiftList() {
   }
 
   useEffect(() => {
-    if (selectedGifts.length % 4 !== 0) {
+    if (selectedGifts.length % 4 !== 0 && !isMobile) {
       const miss = 4 - (selectedGifts.length % 4);
 
       for (let index = 0; index < miss; index++) {

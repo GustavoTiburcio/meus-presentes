@@ -56,6 +56,10 @@ export const GiftsContainer = styled.div`
   flex-wrap: wrap;
   row-gap: 3rem;
   /* column-gap: 0.5rem; */
+
+  @media screen and (max-width: 767px) {
+    flex-direction: column;
+  }
 `;
 
 export const ModalContentContainer = styled(ModalDiv)`
@@ -67,6 +71,12 @@ export const ModalContentContainer = styled(ModalDiv)`
 
     img {
       width: 20%;
+    }
+
+    @media screen and (max-width: 767px) {
+      img {
+        width: 35%;
+      }
     }
 `
 

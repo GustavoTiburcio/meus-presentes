@@ -53,6 +53,6 @@ export const Button = styled.button`
   margin: 2rem 0px;
 
    @media screen and (max-width: 767px) {
-    margin: 2rem 0px 3rem 0px;
+    margin: 2rem 0px 2.5rem 0px;
   }
 `;
