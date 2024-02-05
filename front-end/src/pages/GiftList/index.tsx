@@ -153,7 +153,7 @@ export default function GiftList() {
 
       if (response) {
         setSelectedGiftsMock((prev: any) => {
-          return [...prev.filter((selectedGift: any) => JSON.stringify(selectedGift) !== JSON.stringify({ id: '9999999', name: '', image_uri: '', requestedAmount: 0, confirmedAmount: 0 })), ...newItem];
+          return [...prev.filter((selectedGift: any) => JSON.stringify(selectedGift) !== JSON.stringify({ id: '9999999', name: '', image_uri: '', requested_amount: 0, confirmed_amount: 0 })), ...newItem];
         });
         toast.success(`${newItem[0].name} foi adicionado a sua lista 😁`);
         setModalVisible(false);
@@ -214,7 +214,7 @@ export default function GiftList() {
       });
 
       if (response.status === 200) {
-        setExamplesGifts(response.data.map((gift: TGift[]) => ({ ...gift, ...{ gift_list_id: routeParams.id }})));
+        setExamplesGifts(response.data.map((gift: TGift[]) => ({ ...gift, ...{ gift_list_id: routeParams.id } })));
       }
     } catch (error: any) {
       toast.error('Não foi possível obter exemplos de presentes para sua lista. ' + error.message);
