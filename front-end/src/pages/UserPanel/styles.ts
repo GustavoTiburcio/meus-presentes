@@ -8,6 +8,11 @@ export const Container = styled.main`
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 2rem;
+
+  @media screen and (max-width: 767px) {
+    margin-top: 1rem;
+  }
 `;
 
 export const SubContainer = styled.div`
@@ -15,15 +20,22 @@ export const SubContainer = styled.div`
   flex-direction: row;
   justify-content: space-evenly;
   width: 90%;
+
+  @media screen and (max-width: 767px) {
+    flex-direction: column;
+  }
 `;
 
 export const MenuContainer = styled.div`
   width: 15%;
-  /* background-color: cyan; */
-  /* border: 2px solid #E5E5E5; */
 
   div:hover{
     background: #F2F2F2;
+  }
+
+  @media screen and (max-width: 767px) {
+    width: 100%;
+    margin-bottom: 1rem;
   }
 `;
 
@@ -32,6 +44,12 @@ export const MenuInfoContainer = styled.div`
   width: 80%;
   flex-direction: column;
   align-items: center;
+
+  @media screen and (max-width: 767px) {
+    width: 90%;
+    align-self: center;
+    text-align: justify;
+  }
 `;
 
 export const ItemMenu = styled.div<ItemMenuProps>`
@@ -61,6 +79,10 @@ export const ItemMenu = styled.div<ItemMenuProps>`
     width: 80%;
   }
 
+  @media screen and (max-width: 767px) {
+
+  }
+
 `;
 
 export const InicioButtonsContainer = styled.div`
@@ -84,6 +106,13 @@ export const ListaPresenteContainer = styled.div`
     margin: 1rem 0px 1rem 1rem;
   }
 
+  @media screen and (max-width: 767px) {
+    width: 100%;
+    flex-direction: column;
+
+    align-items: center;
+  }
+
 `;
 
 export const ListaPresenteTitle = styled.span`
@@ -104,6 +133,11 @@ export const ButtonsContainer = styled.div`
   flex-wrap: wrap;
   row-gap: 1rem;
 
+  @media screen and (max-width: 767px) {
+    justify-content: center;
+    flex-direction: column;
+  }
+
 `;
 
 export const ButtonOption = styled.span`
@@ -122,5 +156,11 @@ export const ButtonOption = styled.span`
   }
   &:hover{
     text-decoration: underline;
+  }
+
+  @media screen and (max-width: 767px) {
+    &:not(:first-of-type) {
+    margin-left: 0rem;
+  }
   }
 `;

@@ -196,10 +196,6 @@ export default function UserPanel() {
 
   return (
     <Container>
-      {/* <Title /> */}
-      <br />
-      <br />
-      <br />
       <SubContainer>
         <Menu />
         <MenuInfo />

@@ -64,7 +64,7 @@ export default function Header() {
 
   return (
     <Container
-      $hoverHeaderActive={isMobile}
+      $hoverHeaderActive={false}
     >
       <PesquisaModal />
       <Subcontainer>

@@ -17,6 +17,9 @@ export const Logo = styled.img`
   width: 7%;
   cursor: pointer;
   margin: 2rem 0px;
+  @media screen and (max-width: 767px) {
+    width: 30%;
+  }
 `;
 
 export const LoginDiv = styled.div`
@@ -30,6 +33,8 @@ export const LoginDiv = styled.div`
   min-height: 400px;
 
   @media screen and (max-width: 767px) {
+    max-width: 97%;
+    min-height: 350px;
   }
 `;
 
@@ -81,13 +86,17 @@ export const Form = styled.form`
   padding: 0 50px;
   height: 100%;
   text-align: center;
+
+  @media screen and (max-width: 767px) {
+    padding: 0 40px;
+  }
 `;
 
 export const Title = styled.h1`
   font-weight: bold;
   margin: 0;
   @media screen and (max-width: 767px) {
-    font-size: 1.5rem;
+    font-size: 1rem;
   }
 `;
 
@@ -123,6 +132,10 @@ export const Button = styled.button`
    }
    &:focus {
        outline: none;
+   }
+
+   @media screen and (max-width: 767px) {
+    font-size: 10px;
    }
 `;
 
