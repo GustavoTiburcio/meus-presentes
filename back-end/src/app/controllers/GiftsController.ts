@@ -134,7 +134,7 @@ class GiftModelsController {
     const giftModel = await GiftsRepository.update(id, {
       name,
       image_uri: imageUri ? imageUri : giftExists.image_uri,
-      electrical,
+      electrical: Boolean(electrical),
       voltage,
       requested_amount,
       color,

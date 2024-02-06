@@ -110,15 +110,13 @@ export default function GiftList() {
           ...(selectedModalItem?.electrical && { electrical: true, voltage: modalVoltageInputRef.current?.value ?? '' })
         }
 
+        let response;
+
         if (modalImageInputRef.current?.files) {
-          const imageShackUri = await handleFileUpload(modalImageInputRef.current.files[0]);
-
-          if (imageShackUri) {
-            editedItem.image_uri = 'https://' + imageShackUri;
-          }
+          response = await putGift(editedItem, modalImageInputRef.current.files[0]);
+        } else {
+          response = await putGift(editedItem);
         }
-
-        const response = await putGift(editedItem);
 
         if (response) {
           getGiftList();
@@ -154,22 +152,20 @@ export default function GiftList() {
         });
       }
 
-      if (modalImageInputRef.current?.files) {
-        const imageShackUri = await handleFileUpload(modalImageInputRef.current.files[0]);
+      let response;
 
-        if (imageShackUri) {
-          newItem[0].image_uri = 'https://' + imageShackUri;
-        }
+      if (modalImageInputRef.current?.files) {
+        response = await postGift(newItem[0], modalImageInputRef.current.files[0]);
+      } else {
+        response = await postGift(newItem[0]);
       }
 
-      const response = await postGift(newItem[0]);
-
       if (response) {
-        setSelectedGifts((prev: any) => {
-          return [...prev.filter((selectedGift: any) => JSON.stringify(selectedGift) !== JSON.stringify({ id: '9999999', name: '', image_uri: '', requested_amount: 0, confirmed_amount: 0 })), ...newItem];
-        });
+        getGiftList();
+
         toast.success(`${newItem[0].name} foi adicionado a sua lista 😁`);
         setModalVisible(false);
+
         return;
       }
 
@@ -234,9 +230,25 @@ export default function GiftList() {
     }
   }
 
-  async function postGift(gift: TGift) {
+  async function postGift(gift: TGift, file?: any) {
     try {
-      const response = await api.post('/gifts', gift);
+      const formData = new FormData();
+
+      formData.append('file', file);
+      formData.append('name', gift.name);
+      formData.append('electrical', gift?.electrical ? 'true' : '');
+      formData.append('voltage', gift.voltage || '');
+      formData.append('requested_amount', gift?.requested_amount ? gift.requested_amount.toString() : '1');
+      formData.append('confirmed_amount', '');
+      formData.append('color', gift.color || '');
+      formData.append('observation', gift.observation || '');
+      formData.append('gift_list_id', gift.gift_list_id || '');
+
+      const response = await api.post('/gifts', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       if (response.status === 201) {
         return response.data;
@@ -250,9 +262,25 @@ export default function GiftList() {
     }
   }
 
-  async function putGift(gift: TGift) {
+  async function putGift(gift: TGift, file?: any) {
     try {
-      const response = await api.put(`/gifts/${gift.id}`, gift);
+      const formData = new FormData();
+
+      formData.append('file', file);
+      formData.append('name', gift.name);
+      formData.append('electrical', gift?.electrical ? 'true' : '');
+      formData.append('voltage', gift.voltage || '');
+      formData.append('requested_amount', gift?.requested_amount ? gift.requested_amount.toString() : '1');
+      formData.append('confirmed_amount', '');
+      formData.append('color', gift.color || '');
+      formData.append('observation', gift.observation || '');
+      formData.append('gift_list_id', gift.gift_list_id || '');
+
+      const response = await api.put(`/gifts/${gift.id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       if (response.status === 200) {
         return response.data;
@@ -286,30 +314,6 @@ export default function GiftList() {
       handleOverlayActive(false);
     }
   }
-
-  async function handleFileUpload(file: any) {
-    try {
-      if (!file) return;
-
-      const formData = new FormData();
-
-      formData.append('file', file);
-      formData.append('api_key', import.meta.env.VITE_IMAGESHACK_API_KEY);
-      formData.append('album', '5D7A9X5A');
-
-      const response = await api.post('http://api.imageshack.com/v2/images', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-
-      if (response.status === 200) return response.data.result.images[0].direct_link
-
-    } catch (error: any) {
-      toast.error('Não foi possível salvar imagem. ' + error.message);
-    }
-  };
-
 
   function Modal() {
     return (
