@@ -1,6 +1,6 @@
 import express from 'express';
 import GiftsRepository from '../repositories/GiftsRepository';
-import { isValidUUIDv4 } from '../../utils';
+import { imageShackUpload, isValidUUIDv4 } from '../../utils';
 import GiftListRepository from '../repositories/GiftListRepository';
 
 class GiftModelsController {
@@ -40,14 +40,16 @@ class GiftModelsController {
     //Create new row;
     const {
       name,
-      image_uri,
       electrical,
       voltage,
       requested_amount,
       color,
       observation,
-      gift_list_id,
+      gift_list_id
     } = request.body;
+
+    const file = request?.file;
+    console.log(file);
 
     if (!name) {
       return response.status(400).json({ error: 'Name is required' });
@@ -58,7 +60,7 @@ class GiftModelsController {
     if (!isValidUUIDv4(gift_list_id)) {
       return response.status(400).json({ error: 'Invalid UUID string' });
     }
-    if (electrical && !voltage) {
+    if (Boolean(electrical) && !voltage) {
       return response.status(400).json({ error: 'property voltage is required when electrical is true' });
     }
     if (!requested_amount) {
@@ -74,12 +76,14 @@ class GiftModelsController {
       return response.status(404).json({ error: 'Gift list not found.' });
     }
 
+    const imageUri = await imageShackUpload(file?.path);
+
     const gift = await GiftsRepository.create({
       name,
-      image_uri,
-      electrical,
+      image_uri: imageUri,
+      electrical: Boolean(electrical),
+      requested_amount: +requested_amount,
       voltage,
-      requested_amount,
       color,
       observation,
       gift_list_id,

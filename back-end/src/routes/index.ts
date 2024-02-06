@@ -1,4 +1,7 @@
 import { Router } from 'express';
+import multer from 'multer';
+import path from 'path';
+
 import UserController from '../app/controllers/UserController';
 import LoginController from '../app/controllers/LoginController';
 import ListTypesController from '../app/controllers/ListTypesController';
@@ -7,6 +10,20 @@ import GiftModelsController from '../app/controllers/GiftModelsController';
 import GiftsController from '../app/controllers/GiftsController';
 
 export const router = Router();
+
+// Config multer
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'src/uploads/'); // folder to save files
+  },
+  filename: function (req, file, cb) {
+    const timestamp = Date.now();
+    const ext = path.extname(file.originalname);
+    cb(null, `${timestamp}${ext}`); // FileName = timestamp + extension
+  }
+});
+
+const upload = multer({ storage: storage });
 
 router.get('/', (req, res) => res.send('<h1>meus-presentes API</h1>'));
 
@@ -41,6 +58,6 @@ router.delete('/giftModels/:id', GiftModelsController.delete);
 //Gifts
 router.get('/gifts', GiftsController.index);
 router.get('/gifts/:id', GiftsController.show);
-router.post('/gifts', GiftsController.store);
+router.post('/gifts', upload.single('file'), GiftsController.store);
 router.put('/gifts/:id', GiftsController.update);
 router.delete('/gifts/:id', GiftsController.delete);

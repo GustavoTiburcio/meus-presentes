@@ -15,7 +15,7 @@ type TGiftModelElectrical = TGiftModelBase & {
   voltage: '220v' | '110v' | '24v' | '12v' | '';
 };
 
-type TGiftModelNonElectrical = TGiftModelBase & {
+export type TGiftModelNonElectrical = TGiftModelBase & {
   electrical?: false;
   voltage?: never;
 };
