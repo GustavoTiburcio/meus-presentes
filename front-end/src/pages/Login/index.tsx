@@ -13,7 +13,7 @@ import api from '../../service/api';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { logoUri, loginAuth }: IContext = useContext(Context);
+  const { logoUri, loginAuth, handleOverlayActive }: IContext = useContext(Context);
 
   const [login, setLogin] = useState(true);
   const [redefinirPassword, setRedefinirPassword] = useState(false);
@@ -43,17 +43,26 @@ export default function Login() {
   ];
 
   async function getLogin({ email, password }: ILoginData) {
-    if (!email || !password) {
-      toast.warning('Credenciais inválidas. Verique os campos digitados.');
-      return;
-    }
+    try {
+      if (!email || !password) {
+        toast.warning('Credenciais inválidas. Verique os campos digitados.');
+        return;
+      }
 
-    const response = await loginAuth({ email, password });
+      handleOverlayActive(true);
 
-    if (response) {
-      toast.success(`Bem-vindo(a)!! Fique a vontade 😉`);
-      navigate('/painelDeUsuario');
-      return;
+      const response = await loginAuth({ email, password });
+
+      if (response) {
+        toast.success(`Bem-vindo(a)!! Fique a vontade 😉`);
+        navigate('/painelDeUsuario');
+        return;
+      }
+
+    } catch (error) {
+
+    } finally {
+      handleOverlayActive(false);
     }
   }
 
@@ -63,6 +72,8 @@ export default function Login() {
         toast.warning('Dados inválidos. Verique os campos digitados.');
         return;
       }
+
+      handleOverlayActive(true);
 
       const response = await api.post('/users', newAccount);
 
@@ -87,6 +98,8 @@ export default function Login() {
         return;
       }
       toast.error('Falha ao cadastrar novo usuário. ' + error.message);
+    } finally {
+      handleOverlayActive(false);
     }
   }
 
@@ -97,6 +110,8 @@ export default function Login() {
         return;
       }
 
+      handleOverlayActive(true);
+
       const response = await api.post('/users/resetPassword', { email });
 
       if (response.status === 204) {
@@ -106,6 +121,8 @@ export default function Login() {
 
     } catch (error: any) {
       toast.error('Falha ao solicitar redefinição de senha. ' + error.message);
+    } finally {
+      handleOverlayActive(false);
     }
   }
 
