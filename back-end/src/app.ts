@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import logger from 'morgan';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
 require('express-async-errors');
 
 import { router } from './routes';
@@ -13,8 +15,17 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS
 //Create app
 export const app = express();
 
+const uploadDir = path.join(__dirname, 'uploads');
+
+// Verify if uploadDir exists
+if (!fs.existsSync(uploadDir)) {
+    // If it doesn't exist, create it
+    fs.mkdirSync(uploadDir);
+}
+
 //Middlewares
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   if (err instanceof SyntaxError && 'status' in err && err.status === 400 && 'body' in err) {
     res.status(400).json({ erro: 'invalid JSON format' });
