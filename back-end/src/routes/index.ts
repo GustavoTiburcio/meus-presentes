@@ -12,14 +12,14 @@ import GiftsController from '../app/controllers/GiftsController';
 export const router = Router();
 
 // define upload path for production
-const uploadPath = process.env.NODE_ENV === 'production' ? 'dist/uploads/' : 'src/uploads/';
+const uploadPath = process.env.DEPLOY === 'production' ? 'dist/uploads/' : 'src/uploads/';
 
 // Config multer
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: function (req: any, file: any, cb: any) {
     cb(null, uploadPath); // folder to save files
   },
-  filename: function (req, file, cb) {
+  filename: function (req: any, file: any, cb: any) {
     const timestamp = Date.now();
     const ext = path.extname(file.originalname);
     cb(null, `${timestamp}${ext}`); // FileName = timestamp + extension

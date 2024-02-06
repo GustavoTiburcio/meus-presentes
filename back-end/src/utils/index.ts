@@ -90,11 +90,7 @@ export async function imageShackUpload(filePath?: string) {
     });
 
     if (response.status === 200) {
-      fs.unlink(filePath, (err) => {
-        if (err) {
-          console.error('Failed to delete file: ', err);
-        }
-      });
+      fs.unlink(filePath, (err) => { });
 
       return 'https://' + response.data.result.images[0].direct_link;
     }
