@@ -59,9 +59,6 @@ router.delete('/giftModels/:id', GiftModelsController.delete);
 router.get('/gifts', GiftsController.index);
 router.get('/gifts/:id', GiftsController.show);
 router.post('/gifts', upload.single('file'), GiftsController.store);
-<<<<<<< HEAD
 router.put('/gifts/:id', upload.single('file'), GiftsController.update);
-=======
 router.put('/gifts/:id', GiftsController.update);
->>>>>>> 6f4068d21a62c265fb9c9ef9086ed9a8a736c711
 router.delete('/gifts/:id', GiftsController.delete);
