@@ -1,9 +1,12 @@
 import { query } from '../../database';
-import { TGiftModel } from './GiftModelsRepository';
 
-type IGiftBase = Omit<TGiftModel, 'list_type_id'>;
-
-interface IGift extends IGiftBase {
+type TGift = {
+  id?: string;
+  name: string;
+  image_uri?: string;
+  electrical: boolean;
+  voltage: string;
+  created_at?: Date;
   gift_list_id?: string;
   requested_amount?: number;
   confirmed_amount?: number;
@@ -38,7 +41,7 @@ class GiftsRepository {
     color,
     observation,
     gift_list_id,
-  }: IGift) {
+  }: TGift) {
     const [row] = await query(`
       INSERT INTO gifts(name, image_uri, electrical, voltage, requested_amount, color, observation, gift_list_id)
       VALUES($1, $2, $3, $4, $5, $6, $7, $8)
@@ -55,7 +58,7 @@ class GiftsRepository {
     requested_amount,
     color,
     observation,
-  }: IGift) {
+  }: TGift) {
     const [row] = await query(`
       UPDATE gifts
       SET name = $1, image_uri = $2, electrical = $3, voltage = $4, requested_amount = $5, color = $6, observation = $7

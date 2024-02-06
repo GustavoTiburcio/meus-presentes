@@ -1,5 +1,8 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import axios from 'axios';
+import FormData from 'form-data';
+import fs from 'fs';
 
 dotenv.config();
 
@@ -50,7 +53,7 @@ export function sendEmail(emailMessage: IEmailMessage) {
       return;
     }
 
-    console.log(info); 
+    console.log(info);
   });
 }
 
@@ -66,4 +69,38 @@ export function generateRandomPassword(): string {
   }
 
   return password;
+}
+
+export async function imageShackUpload(filePath?: string) {
+  try {
+    if (!filePath) return undefined;
+
+    const apiKey = process.env.IMAGESHACK_API_KEY;
+
+    const formData = new FormData();
+
+    formData.append('fileupload', fs.createReadStream(filePath));
+    formData.append('api_key', apiKey);
+    formData.append('album', '5D7A9X5A');
+
+    const response = await axios.post('http://api.imageshack.com/v2/images', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    if (response.status === 200) {
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.error('Failed to delete file: ', err);
+        }
+      });
+
+      return 'https://' + response.data.result.images[0].direct_link;
+    }
+
+    return undefined;
+  } catch (error) {
+    console.error('Failed to upload image: ', error);
+  }
 }
