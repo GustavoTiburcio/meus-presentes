@@ -49,6 +49,10 @@ class GiftModelsController {
     } = request.body;
 
     const file = request?.file;
+<<<<<<< HEAD
+=======
+    console.log(file);
+>>>>>>> 6f4068d21a62c265fb9c9ef9086ed9a8a736c711
 
     if (!name) {
       return response.status(400).json({ error: 'Name is required' });
