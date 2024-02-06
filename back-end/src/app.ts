@@ -15,12 +15,17 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS
 //Create app
 export const app = express();
 
-const uploadDir = path.join(__dirname, 'uploads');
+try{
+  const uploadDir = path.join(__dirname, 'uploads');
 
-// Verify if uploadDir exists
-if (!fs.existsSync(uploadDir)) {
-    // If it doesn't exist, create it
-    fs.mkdirSync(uploadDir);
+  // Verify if uploadDir exists
+  if (!fs.existsSync(uploadDir)) {
+      console.log('Creating upload directory...');
+      // If it doesn't exist, create it
+      fs.mkdirSync(uploadDir);
+  }
+} catch {
+  console.log('Error creating upload directory...');
 }
 
 //Middlewares
