@@ -21,6 +21,7 @@ import { Button } from '../../components/Presentation/styles';
 import api from '../../service/api';
 import Context, { IContext } from '../../context/Context';
 import { IGiftList } from '../UserPanel';
+import LoginValidator from '../../components/LoginValidator';
 
 type TGiftBase = {
   id?: string;
@@ -54,7 +55,7 @@ export type TGift = TGiftElectrical | TGiftNonElectrical;
 export default function GiftList() {
   const routeParams = useParams();
   const { width } = useWindowDimensions();
-  const { handleOverlayActive }: IContext = useContext(Context);
+  const { loginData, handleOverlayActive }: IContext = useContext(Context);
 
   const isMobile = width <= 767;
 
@@ -196,6 +197,8 @@ export default function GiftList() {
 
   async function getGiftList() {
     try {
+      if (!loginData?.id) return;
+
       handleOverlayActive(true);
 
       const response = await api.get(`/giftLists/${routeParams.id}`);
@@ -468,6 +471,7 @@ export default function GiftList() {
 
   return (
     <Container>
+      <LoginValidator />
       <Modal />
       <h2>{giftList?.name ?? ''}</h2>
       <p>Adicione, Crie ou Remova presentes da sua lista!</p>

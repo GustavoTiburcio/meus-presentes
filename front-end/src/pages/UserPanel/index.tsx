@@ -14,6 +14,7 @@ import Context, { IContext } from '../../context/Context';
 
 import { toast } from 'react-toastify';
 import api from '../../service/api';
+import LoginValidator from '../../components/LoginValidator';
 
 interface IItemsMenu {
   name: string;
@@ -44,6 +45,8 @@ export default function UserPanel() {
 
   async function getGiftLists() {
     try {
+      if (!loginData?.id) return;
+
       handleOverlayActive(true);
 
       const response = await api.get('/giftLists', {
@@ -196,6 +199,7 @@ export default function UserPanel() {
 
   return (
     <Container>
+      <LoginValidator />
       <SubContainer>
         <Menu />
         <MenuInfo />

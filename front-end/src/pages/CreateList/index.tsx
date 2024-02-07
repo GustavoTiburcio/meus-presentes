@@ -7,6 +7,7 @@ import { Button } from '../../components/Presentation/styles';
 
 import api from '../../service/api';
 import Context, { IContext } from '../../context/Context';
+import LoginValidator from '../../components/LoginValidator';
 
 export interface IListTypes {
   id: string;
@@ -84,9 +85,8 @@ export default function CreateList() {
 
   async function getGiftListById() {
     try {
-      if (!routeParams?.id) {
-        return;
-      }
+      if (!loginData?.id) return;
+      if (!routeParams?.id) return;
 
       handleOverlayActive(true);
 
@@ -147,6 +147,8 @@ export default function CreateList() {
 
   async function getListTypes() {
     try {
+      if (!loginData?.id) return;
+
       const response = await api.get('/listTypes');
 
       if (response.status === 200) {
@@ -165,6 +167,7 @@ export default function CreateList() {
 
   return (
     <Container>
+      <LoginValidator />
       <h2>{routeParams?.id ? 'Editar Informações' : 'Criar Lista de Presente'}</h2>
       <p>{routeParams?.id ? 'Edite as informações dos campos abaixo e clique em salvar' : 'Cadastre a sua lista de presentes no MeusPresentes.com.br'}</p>
       <FormContainer onSubmit={handleSubmit}>
